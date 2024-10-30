@@ -23,7 +23,7 @@ To build `PeleC` (using the default submodules for AMReX, PelePhysics, and SUNDI
 
    a. In VisIt, direct the File->Open dialogue to select the file named "Header" that is inside each plotfile folder.
 
-   b. In ParaViuew, navigate to the case directory, open the plotfile folder.
+   b. In ParaView, navigate to the case directory, open the plotfile folder.
 
    c. With Amrvis, `$ amrvis3d plt00030`, for example.
 
