@@ -449,6 +449,7 @@ jobs:
           -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
           -DCMAKE_CXX_COMPILER:STRING=$(which clang++) \
           -DCMAKE_C_COMPILER:STRING=$(which clang) \
+          -DCMAKE_CXX_STANDARD:STRING=17 \
           -DPELE_ENABLE_MPI:BOOL=OFF \
           -DPELE_ENABLE_HIP:BOOL=ON \
           -DPELE_EXCLUDE_BUILD_IN_CI:BOOL=ON \
