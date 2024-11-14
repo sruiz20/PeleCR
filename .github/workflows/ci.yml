@@ -332,7 +332,7 @@ jobs:
           (for DIM in 2 3; do \
             printf "\n-------- Testing ${DIM}D --------\n"; \
             cd ${{runner.workspace}}/build-${DIM}d-${{matrix.os}}-${{matrix.build_type}}; \
-            ctest -j ${{env.NPROCS}} ${{matrix.ctest_args}} --output-on-failure; \
+            ctest ${{matrix.ctest_args}} --output-on-failure; \
             if [ $? -ne 0 ]; then exit 1; fi \
           done)
   GPU-Nvidia:
