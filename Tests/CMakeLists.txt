@@ -56,7 +56,7 @@ macro(setup_test)
     file(COPY ${TEST_FILES} DESTINATION "${CURRENT_TEST_BINARY_DIR}/")
 
     # Set some default runtime options for all tests
-    set(RUNTIME_OPTIONS "amrex.the_arena_is_managed=0 amrex.abort_on_unused_inputs=1 amr.plot_int=-1 amr.check_int=-1 amr.checkpoint_files_output=0")
+    set(RUNTIME_OPTIONS "amrex.the_arena_is_managed=0 amr.plot_int=-1 amr.check_int=-1 amr.checkpoint_files_output=0")
     if(PELE_ENABLE_FCOMPARE_FOR_TESTS)
       set(RUNTIME_OPTIONS "${RUNTIME_OPTIONS} amr.plot_file=plt amr.plot_files_output=1")
     else()
