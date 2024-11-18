@@ -3,8 +3,7 @@
 # Imports
 #
 # ========================================================================
-import os
-import numpy.testing as npt
+import os import numpy.testing as npt
 import pandas as pd
 import unittest
 
@@ -24,10 +23,8 @@ class ConsTestCase(unittest.TestCase):
         fdir = os.path.abspath(".")
         fname = os.path.join(fdir, "datlog")
         df = pd.read_csv(fname, sep="\\s+")
-        init_mass = df.mass[0]
-        npt.assert_allclose(df.mass, init_mass, rtol=1e-13)
-        init_rho_E = df.rho_E[0]
-        npt.assert_allclose(df.rho_E, init_rho_E, rtol=1e-13)
+        npt.assert_allclose(df.mass, df.mass[0], rtol=1e-13)
+        npt.assert_allclose(df.rho_E, df.rho_E[0], rtol=1e-13)
 
 
 # ========================================================================
