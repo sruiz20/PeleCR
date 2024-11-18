@@ -3,7 +3,8 @@
 # Imports
 #
 # ========================================================================
-import os import numpy.testing as npt
+import os
+import numpy.testing as npt
 import pandas as pd
 import unittest
 
