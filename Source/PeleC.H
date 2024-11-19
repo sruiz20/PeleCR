@@ -22,6 +22,7 @@
 #include "PelePhysics.H"
 #include "ReactorBase.H"
 #include "turbinflow.H"
+#include "UnitConversions.H"
 #include "SparseData.H"
 #include "EBStencilTypes.H"
 #include "DiagBase.H"
