@@ -329,7 +329,7 @@ jobs:
           exit ${return}
       - name: Test
         run: |
-          (for DIM in 2; do \
+          (for DIM in 2 3; do \
             printf "\n-------- Testing ${DIM}D --------\n"; \
             cd ${{runner.workspace}}/build-${DIM}d-${{matrix.os}}-${{matrix.build_type}}; \
             ctest -j ${{env.NPROCS}} ${{matrix.ctest_args}} --output-on-failure; \
