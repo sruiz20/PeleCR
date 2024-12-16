@@ -56,7 +56,13 @@ macro(setup_test)
     file(COPY ${TEST_FILES} DESTINATION "${CURRENT_TEST_BINARY_DIR}/")
 
     # Set some default runtime options for all tests
-    set(RUNTIME_OPTIONS "amr.plot_file=plt amr.checkpoint_files_output=0 amr.plot_files_output=1 amrex.the_arena_is_managed=0 amrex.abort_on_unused_inputs=1")
+    set(RUNTIME_OPTIONS "amr.checkpoint_files_output=0 amrex.the_arena_is_managed=0")
+    if(PELE_ENABLE_FCOMPARE_FOR_TESTS)
+      set(RUNTIME_OPTIONS "${RUNTIME_OPTIONS} amr.plot_files_output=1 amr.plot_int=10 amr.plot_file=plt")
+    else()
+      set(RUNTIME_OPTIONS "${RUNTIME_OPTIONS} amr.plot_files_output=0")
+    endif()
+
     if(PELE_ENABLE_FPE_TRAP_FOR_TESTS AND (NOT APPLE))
       set(RUNTIME_OPTIONS "${RUNTIME_OPTIONS} amrex.signal_handling=1 amrex.fpe_trap_invalid=1 amrex.fpe_trap_zero=1 amrex.fpe_trap_overflow=1")
     else()
@@ -64,7 +70,7 @@ macro(setup_test)
     endif()
     if(PELE_ENABLE_MPI)
       if(PELE_ENABLE_CUDA)
-        set(PELE_NP 2) # 1 rank per GPU on Eagle
+        set(PELE_NP 2)
       else()
         set(PELE_NP 4)
       endif()
