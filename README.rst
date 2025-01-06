@@ -141,6 +141,11 @@ Additionally, to cite the application of PeleC to compressible reacting flows, u
     url = {https://www.sciencedirect.com/science/article/pii/S0010218021002741},
   }
 
+A full list of publications documenting the development of the Pele suite and its
+application to various reacting flow and other simulations is available on the main
+`Pele suite page <https://amrex-combustion.github.io/pubs.html>`_. After publication,
+if you'd like your work to be included on that list, you can request to have it added
+`here <https://github.com/AMReX-Combustion/AMReX-Combustion.github.io/discussions/3>`_.
 
 Acknowledgment
 ~~~~~~~~~~~~~~
