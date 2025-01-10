@@ -123,15 +123,8 @@ pc_compute_hyp_mol_flux(
 
         const amrex::Real cavg = 0.5 * (qaux(iv, QC) + qaux(ivm, QC));
 
-        amrex::Real spl[NUM_SPECIES];
-        for (int n = 0; n < NUM_SPECIES; n++) {
-          spl[n] = qtempl[R_Y + n];
-        }
-
-        amrex::Real spr[NUM_SPECIES];
-        for (int n = 0; n < NUM_SPECIES; n++) {
-          spr[n] = qtempr[R_Y + n];
-        }
+        amrex::Real* spl = &qtempl[R_Y];
+        amrex::Real* spr = &qtempr[R_Y];
 
         amrex::Real flux_tmp[NVAR] = {0.0};
         amrex::Real ustar = 0.0;
