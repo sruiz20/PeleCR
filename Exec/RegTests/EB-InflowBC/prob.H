@@ -92,12 +92,6 @@ struct MyProblemSpecificFunctions : public DefaultProblemSpecificFunctions
       prob_lo[1] + static_cast<amrex::Real>(iv[1] + 0.5) * dx[1],
       prob_lo[2] + static_cast<amrex::Real>(iv[2] + 0.5) * dx[2])};
 
-    const int R_RHO = 0;
-    const int R_UN = 1;
-    const int R_UT1 = 2;
-    const int R_UT2 = 3;
-    const int R_P = 4;
-
     const amrex::Real max_r = 0.1;
     const amrex::Real radius =
       std::sqrt(AMREX_D_TERM(, x[1] * x[1], +x[2] * x[2]));
