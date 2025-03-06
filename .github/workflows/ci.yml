@@ -39,7 +39,7 @@ jobs:
           echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
           echo "CCACHE_COMPRESSLEVEL=10" >> $GITHUB_ENV
           echo "CCACHE_LOGFILE=${{github.workspace}}/ccache.log.txt" >> $GITHUB_ENV
-          echo "CCACHE_MAXSIZE=350M" >> $GITHUB_ENV
+          echo "CCACHE_MAXSIZE=300M" >> $GITHUB_ENV
           make COMP=gnu USE_MPI=FALSE DEBUG=TRUE TPL
           make COMP=llvm USE_MPI=FALSE DEBUG=TRUE PRECISION=FLOAT TPL
       - name: Install Ccache
@@ -218,10 +218,10 @@ jobs:
             ccache_cache: ~/.cache/ccache
           - build_type: Release
             ctest_args: -LE no-ci
-            ccache_size: 150M
+            ccache_size: 100M
           - build_type: Debug
             ctest_args: -R eb-c12
-            ccache_size: 500M
+            ccache_size: 400M
         exclude:
           - os: macos-latest
             build_type: Debug
@@ -351,7 +351,7 @@ jobs:
           echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
           echo "CCACHE_COMPRESSLEVEL=10" >> $GITHUB_ENV
           echo "CCACHE_LOGFILE=${{github.workspace}}/ccache.log.txt" >> $GITHUB_ENV
-          echo "CCACHE_MAXSIZE=500M" >> $GITHUB_ENV
+          echo "CCACHE_MAXSIZE=300M" >> $GITHUB_ENV
       - name: Dependencies
         run: |
           ${{github.workspace}}/Submodules/PelePhysics/Submodules/amrex/.github/workflows/dependencies/ubuntu_free_disk_space.sh
@@ -420,7 +420,7 @@ jobs:
           ${{github.workspace}}/Submodules/PelePhysics/Submodules/amrex/.github/workflows/dependencies/ubuntu_free_disk_space.sh
           sudo mkdir --parents --mode=0755 /etc/apt/keyrings
           wget https://repo.radeon.com/rocm/rocm.gpg.key -O - | gpg --dearmor | sudo tee /etc/apt/keyrings/rocm.gpg > /dev/null
-          echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/rocm.gpg] https://repo.radeon.com/rocm/apt/6.2.4 jammy main" | sudo tee --append /etc/apt/sources.list.d/rocm.list
+          echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/rocm.gpg] https://repo.radeon.com/amdgpu/6.3.3/ubuntu noble main" | sudo tee /etc/apt/sources.list.d/amdgpu.list
           echo -e 'Package: *\nPin: release o=repo.radeon.com\nPin-Priority: 600' | sudo tee /etc/apt/preferences.d/rocm-pin-600
           echo 'export PATH=/opt/rocm/llvm/bin:/opt/rocm/bin:/opt/rocm/profiler/bin:/opt/rocm/opencl/bin:$PATH' | sudo tee -a /etc/profile.d/rocm.sh
           sudo apt-get update
@@ -487,7 +487,7 @@ jobs:
           echo "CCACHE_COMPRESS=1" >> $GITHUB_ENV
           echo "CCACHE_COMPRESSLEVEL=10" >> $GITHUB_ENV
           echo "CCACHE_LOGFILE=${{github.workspace}}/ccache.log.txt" >> $GITHUB_ENV
-          echo "CCACHE_MAXSIZE=150M" >> $GITHUB_ENV
+          echo "CCACHE_MAXSIZE=100M" >> $GITHUB_ENV
           echo "CCACHE_DEPEND=1" >> $GITHUB_ENV
       - name: Dependencies
         run: |
