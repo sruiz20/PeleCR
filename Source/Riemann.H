@@ -254,19 +254,6 @@ laxfriedrich_flux(
   amrex::Real er = 0.0;
   eos.RYP2E(rr, mfrac_r, pr, er);
 
-  // rho e total
-  // Hari S: see Blazek's textbook,
-  // Computational fluid dynamics: principles and applications
-  // Appendix A3, Navier-Stokes in rotating frame of reference
-  amrex::Real r_elt = rl * (el +
-                            0.5 * (ul * ul + vl * vl + v2l * v2l)
-                            // rotational frame energy
-                            - 0.5 * omegal * omegal * radl * radl);
-  amrex::Real r_ert = rr * (er +
-                            0.5 * (ur * ur + vr * vr + v2r * v2r)
-                            // rotational frame energy
-                            - 0.5 * omegar * omegar * radr * radr);
-
   const amrex::Real wl = amrex::max<amrex::Real>(wsmall, cl * rl);
   const amrex::Real wr = amrex::max<amrex::Real>(wsmall, cr * rr);
   ustar = ((wl * ul + wr * ur) + (pl - pr)) / (wl + wr);
@@ -281,6 +268,33 @@ laxfriedrich_flux(
 
   maxeigval = max_wavespd;
 
+  // rho e total
+  // Hari S: see Blazek's textbook,
+  // Computational fluid dynamics: principles and applications
+  // Appendix A3, Navier-Stokes in rotating frame of reference
+
+  amrex::Real ro_l = 0.0;
+  amrex::Real rspo_l[NUM_SPECIES];
+  for (int n = 0; n < NUM_SPECIES; n++) {
+    rspo_l[n] = rl * spl[n];
+    ro_l += rspo_l[n];
+  }
+  
+  amrex::Real ro_r = 0.0;
+  amrex::Real rspo_r[NUM_SPECIES];
+  for (int n = 0; n < NUM_SPECIES; n++) {
+    rspo_r[n] = rr * spr[n];
+    ro_r += rspo_r[n];
+  }
+  amrex::Real r_elt = rl * (el +
+                            0.5 * (ul * ul + vl * vl + v2l * v2l)
+                            // rotational frame energy
+                            - 0.5 * omegal * omegal * radl * radl);
+  amrex::Real r_ert = rr * (er +
+                            0.5 * (ur * ur + vr * vr + v2r * v2r)
+                            // rotational frame energy
+                            - 0.5 * omegar * omegar * radr * radr);
+
   // density and mass frac eqn
   uflx_rho = 0.0;
   for (int n = 0; n < NUM_SPECIES; n++) {
@@ -290,12 +304,12 @@ laxfriedrich_flux(
   }
 
   // three momentum eqns
-  uflx_u = 0.5 * ((rl * ul * ul + pl + rr * ur * ur + pr) -
-                  max_wavespd * (rr * ur - rl * ul));
+  uflx_u = 0.5 * ((ro_l * ul * ul + pl + ro_r * ur * ur + pr) -
+                  max_wavespd * (ro_r * ur - ro_l * ul));
   uflx_v =
-    0.5 * ((rl * vl * ul + rr * vr * ur) - max_wavespd * (rr * vr - rl * vl));
-  uflx_w = 0.5 * ((rl * v2l * ul + rr * v2r * ur) -
-                  max_wavespd * (rr * v2r - rl * v2l));
+    0.5 * ((ro_l * vl * ul + ro_r * vr * ur) - max_wavespd * (ro_r * vr - ro_l * vl));
+  uflx_w = 0.5 * ((ro_l * v2l * ul + ro_r * v2r * ur) -
+                  max_wavespd * (ro_r * v2r - ro_l * v2l));
 
   // total energy eqn
   uflx_eden = 0.5 * (((r_elt + pl) * ul + (r_ert + pr) * ur) -
@@ -303,6 +317,6 @@ laxfriedrich_flux(
 
   // not really used
   uflx_eint =
-    0.5 * ((rl * el * ul + rr * er * ur) - max_wavespd * (rr * er - rl * el));
+    0.5 * ((ro_l * el * ul + ro_r * er * ur) - max_wavespd * (ro_r * er - ro_l * el));
 }
 #endif
