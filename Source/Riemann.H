@@ -286,11 +286,11 @@ laxfriedrich_flux(
     rspo_r[n] = rr * spr[n];
     ro_r += rspo_r[n];
   }
-  amrex::Real r_elt = rl * (el +
+  amrex::Real r_elt = ro_l * (el +
                             0.5 * (ul * ul + vl * vl + v2l * v2l)
                             // rotational frame energy
                             - 0.5 * omegal * omegal * radl * radl);
-  amrex::Real r_ert = rr * (er +
+  amrex::Real r_ert = ro_r * (er +
                             0.5 * (ur * ur + vr * vr + v2r * v2r)
                             // rotational frame energy
                             - 0.5 * omegar * omegar * radr * radr);
