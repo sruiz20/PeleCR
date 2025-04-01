@@ -165,7 +165,7 @@ computeTangentialVelDerivs(
     tanders[dir] = tander_ec[dir].array();
     setV(eboxes[dir], GradUtils::nCompTan, tanders[dir], 0);
     const amrex::Real d1 = dir == 0 ? dx[1] : dx[0];
-    const amrex::Real d2 = dir == 2 ? dx[1] : dx[2];
+    const amrex::Real d2 = dir == 2 ? dx[1] : AMREX_ARLIM_3D(dx)[2];
     amrex::ParallelFor(
       eboxes[dir], [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         pc_compute_tangential_vel_derivs(
