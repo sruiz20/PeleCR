@@ -159,19 +159,23 @@ computeTangentialVelDerivs(
   const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx)
 {
   BL_PROFILE("PeleC::pc_compute_tangential_vel_derivs()");
+#if AMREX_SPACEDIM == 3
   for (int dir = 0; dir < AMREX_SPACEDIM; dir++) {
     tander_ec[dir].resize(
       eboxes[dir], GradUtils::nCompTan, amrex::The_Async_Arena());
     tanders[dir] = tander_ec[dir].array();
     setV(eboxes[dir], GradUtils::nCompTan, tanders[dir], 0);
     const amrex::Real d1 = dir == 0 ? dx[1] : dx[0];
-    const amrex::Real d2 = dir == 2 ? dx[1] : AMREX_ARLIM_3D(dx)[2];
+    const amrex::Real d2 = dir == 2 ? dx[1] : dx[2];
     amrex::ParallelFor(
       eboxes[dir], [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         pc_compute_tangential_vel_derivs(
           i, j, k, q_ar, dir, d1, d2, tanders[dir]);
       });
   }
+#else
+  amrex::Abort("computeTangentialVelDerivs: only supported in 3D");
+#endif
 }
 
 void
