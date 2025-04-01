@@ -174,6 +174,7 @@ computeTangentialVelDerivs(
       });
   }
 #else
+  amrex::ignore_unused(eboxes, tander_ec, tanders, q_ar, dx);
   amrex::Abort("computeTangentialVelDerivs: only supported in 3D");
 #endif
 }
