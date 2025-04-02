@@ -615,64 +615,12 @@ PeleC::buildMetrics()
     geom.Domain(), geom.periodicity(), constants::level_mask_covered(),
     constants::level_mask_notcovered(), constants::level_mask_physbnd(),
     constants::level_mask_interior());
-
-  if (level == 0) {
-    setGridInfo();
-  }
 }
 
 void
 PeleC::setTimeLevel(amrex::Real time, amrex::Real dt_old, amrex::Real dt_new)
 {
   AmrLevel::setTimeLevel(time, dt_old, dt_new);
-}
-
-void
-PeleC::setGridInfo()
-{
-  // Send refinement data. We do it here
-  // because now the grids have been initialized and
-  // we need this data for setting up the problem.
-  // Note that this routine will always get called
-  // on level 0, even if we are doing a restart,
-  // so it is safe to put this here.
-  if (level == 0) {
-    const int max_level = parent->maxLevel();
-    const int nlevs = max_level + 1;
-    const int size = 3 * nlevs;
-
-    amrex::Vector<int> domlo_level(size);
-    amrex::Vector<int> domhi_level(size);
-
-    const int* domlo_coarse = geom.Domain().loVect();
-    const int* domhi_coarse = geom.Domain().hiVect();
-
-    for (int dir = 0; dir < 3; dir++) {
-      domlo_level[dir] = (AMREX_ARLIM_3D(domlo_coarse))[dir];
-      domhi_level[dir] = (AMREX_ARLIM_3D(domhi_coarse))[dir];
-    }
-
-    for (int lev = 1; lev <= max_level; lev++) {
-      amrex::IntVect ref_ratio = parent->refRatio(lev - 1);
-
-      // Note that we are explicitly calculating here what the
-      // data would be on refined levels rather than getting the
-      // data directly from those levels, because some potential
-      // refined levels may not exist at the beginning of the simulation.
-
-      for (int dir = 0; dir < 3; dir++) {
-        domlo_level[3 * lev + dir] = 0;
-        domhi_level[3 * lev + dir] = 0;
-      }
-      for (int dir = 0; dir < AMREX_SPACEDIM; dir++) {
-        int ncell = (domhi_level[3 * (lev - 1) + dir] -
-                     domlo_level[3 * (lev - 1) + dir] + 1) *
-                    ref_ratio[dir];
-        domlo_level[3 * lev + dir] = domlo_level[dir];
-        domhi_level[3 * lev + dir] = domlo_level[3 * lev + dir] + ncell - 1;
-      }
-    }
-  }
 }
 
 /*
