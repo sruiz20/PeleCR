@@ -205,6 +205,7 @@ jobs:
       matrix:
         os: [ubuntu-24.04, macos-latest]
         build_type: [Release, Debug]
+        dim: [2, 3]
         include:
           - os: macos-latest
             install_deps: brew install open-mpi libtool automake ccache
@@ -288,32 +289,28 @@ jobs:
           make install
       - name: Configure
         run: |
-          (for DIM in 2 3; do \
-            printf "\n-------- Configuring ${DIM}D --------\n"; \
-            cmake -B${{runner.workspace}}/build-${DIM}d-${{matrix.os}}-${{matrix.build_type}} \
-            -DCMAKE_INSTALL_PREFIX:PATH=${{runner.workspace}}/install-${DIM}d-${{matrix.os}}-${{matrix.build_type}} \
-            -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} \
-            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
-            -DPELE_DIM:STRING=${DIM} \
-            -DPELE_ENABLE_MPI:BOOL=ON \
-            -DMPIEXEC_PREFLAGS:STRING=--oversubscribe \
-            -DPELE_ENABLE_FCOMPARE_FOR_TESTS:BOOL=OFF \
-            -DPELE_ENABLE_MASA:BOOL=ON \
-            -DPELE_EXCLUDE_BUILD_IN_CI:BOOL=ON \
-            -DMASA_ROOT:PATH=${{runner.workspace}}/deps/install/MASA \
-            -DCMAKE_CXX_COMPILER_LAUNCHER:STRING=ccache \
-            ${{github.workspace}}; \
-            if [ $? -ne 0 ]; then exit 1; fi \
-          done)
+          printf "\n-------- Configuring --------\n"; \
+          cmake -B${{runner.workspace}}/build-${{matrix.dim}}d-${{matrix.os}}-${{matrix.build_type}} \
+          -DCMAKE_INSTALL_PREFIX:PATH=${{runner.workspace}}/install-${{matrix.dim}}d-${{matrix.os}}-${{matrix.build_type}} \
+          -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} \
+          -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+          -DPELE_DIM:STRING=${{matrix.dim}} \
+          -DPELE_ENABLE_MPI:BOOL=ON \
+          -DMPIEXEC_PREFLAGS:STRING=--oversubscribe \
+          -DPELE_ENABLE_FCOMPARE_FOR_TESTS:BOOL=OFF \
+          -DPELE_ENABLE_MASA:BOOL=ON \
+          -DPELE_EXCLUDE_BUILD_IN_CI:BOOL=ON \
+          -DMASA_ROOT:PATH=${{runner.workspace}}/deps/install/MASA \
+          -DCMAKE_CXX_COMPILER_LAUNCHER:STRING=ccache \
+          ${{github.workspace}}; \
+          if [ $? -ne 0 ]; then exit 1; fi \
       - name: Build
         run: |
           ccache -z
-          (for DIM in 2 3; do \
-            printf "\n-------- Building ${DIM}D --------\n"; \
-              cmake --build ${{runner.workspace}}/build-${DIM}d-${{matrix.os}}-${{matrix.build_type}} \
-              --parallel ${{env.NPROCS}} 2>&1 | tee -a ${{runner.workspace}}/build-output.txt; \
-            if [ ${PIPESTATUS[0]} -ne 0 ]; then exit 1; fi \
-          done)
+          printf "\n-------- Building --------\n"; \
+            cmake --build ${{runner.workspace}}/build-${{matrix.dim}}d-${{matrix.os}}-${{matrix.build_type}} \
+            --parallel ${{env.NPROCS}} 2>&1 | tee -a ${{runner.workspace}}/build-output.txt; \
+          if [ ${PIPESTATUS[0]} -ne 0 ]; then exit 1; fi \
       - name: Ccache Report
         run: |
           ccache -s
@@ -330,12 +327,10 @@ jobs:
           exit ${return}
       - name: Test
         run: |
-          (for DIM in 2 3; do \
-            printf "\n-------- Testing ${DIM}D --------\n"; \
-            cd ${{runner.workspace}}/build-${DIM}d-${{matrix.os}}-${{matrix.build_type}}; \
-            ctest ${{matrix.ctest_args}} -VV --output-on-failure; \
-            if [ $? -ne 0 ]; then exit 1; fi \
-          done)
+          printf "\n-------- Testing --------\n"; \
+          cd ${{runner.workspace}}/build-${{matrix.dim}}d-${{matrix.os}}-${{matrix.build_type}}; \
+          ctest ${{matrix.ctest_args}} -VV --output-on-failure; \
+          if [ $? -ne 0 ]; then exit 1; fi \
   GPU-Nvidia:
     name: GPU-CUDA
     needs: [Formatting, CPU-GNUmake]
