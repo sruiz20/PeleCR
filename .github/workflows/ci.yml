@@ -287,6 +287,7 @@ jobs:
           make install
       - name: Download Golds
         if: github.event_name == 'pull_request'
+        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: golds-${{matrix.os}}-${{matrix.build_type}}
