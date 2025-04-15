@@ -1,6 +1,7 @@
 name: PeleC-CI
 
 on:
+  workflow_dispatch:
   push:
     branches: [development]
   pull_request:
@@ -347,7 +348,6 @@ jobs:
           export return=$(tail -n 1 ${{runner.workspace}}/build-output-warnings.txt | awk '{print $2}')
           exit ${return}
       - name: Test
-        continue-on-error: true
         run: |
           (for DIM in 2 3; do \
             printf "\n-------- Testing ${DIM}D --------\n"; \
@@ -356,6 +356,7 @@ jobs:
             if [ $? -ne 0 ]; then exit 1; fi \
           done)
       - name: Move Golds
+        if: success() || failure()
         run: |
           (for DIM in 2 3; do \
             printf "\n-------- Moving ${DIM}D --------\n"; \
@@ -364,6 +365,7 @@ jobs:
             ${{runner.workspace}}/reference-golds-${DIM}d-${{matrix.os}}-${{matrix.build_type}}
           done)
       - name: Upload Golds
+        if: success() || failure()
         #if: github.event_name == 'push' && github.ref == 'refs/heads/development'
         uses: actions/upload-artifact@v4
         with:
