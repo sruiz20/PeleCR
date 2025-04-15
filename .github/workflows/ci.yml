@@ -364,7 +364,7 @@ jobs:
           ccache -z
             cmake --build ${{runner.workspace}}/build-${{matrix.dim}}d-${{matrix.os}}-${{matrix.build_type}}-reference \
             --parallel ${{env.NPROCS}}; \
-          if [ ${PIPESTATUS[0]} -ne 0 ]; then exit 1; fi \
+          if [ ${PIPESTATUS[0]} -ne 0 ]; then exit 1; fi; \
           ccache -s
           du -hs ${{matrix.ccache_cache}}
       - name: Run Reference Version and Compare Output
