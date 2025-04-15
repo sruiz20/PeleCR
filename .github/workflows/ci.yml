@@ -360,10 +360,10 @@ jobs:
         if: success() || failure()
         run: |
           (for DIM in 2 3; do \
-            printf "\n-------- Moving ${DIM}D --------\n"; \
-            rm -rf ${{runner.workspace}}/reference-golds-${DIM}d-${{matrix.os}}-${{matrix.build_type}}
+            printf "\n-------- Moving ${DIM}D Golds --------\n"; \
+            rm -rf ${{runner.workspace}}/reference-golds-${DIM}d-${{matrix.os}}-${{matrix.build_type}}; \
             mv ${{runner.workspace}}/saved-golds-${DIM}d-${{matrix.os}}-${{matrix.build_type}} \
-            ${{runner.workspace}}/reference-golds-${DIM}d-${{matrix.os}}-${{matrix.build_type}}
+            ${{runner.workspace}}/reference-golds-${DIM}d-${{matrix.os}}-${{matrix.build_type}}; \
           done)
       - name: Upload Golds
         if: success() || failure()
