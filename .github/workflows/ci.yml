@@ -366,6 +366,7 @@ jobs:
       - name: Run Reference Version and Compare Output
         if: matrix.reference_comparison == 'ON'
         run : |
+          cd ${{runner.workspace}}/build-${{matrix.dim}}d-${{matrix.os}}-${{matrix.build_type}}-reference; \
           ctest ${{matrix.ctest_args}} -VV --output-on-failure; \
           if [ $? -ne 0 ]; then exit 1; fi; \
 
