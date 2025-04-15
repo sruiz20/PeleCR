@@ -7,6 +7,9 @@ on:
   pull_request:
     branches: [development]
 
+permissions:
+  actions: read
+
 concurrency:
   group: ${{github.ref}}-${{github.head_ref}}-ci
   cancel-in-progress: true
@@ -293,8 +296,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: golds-2d-${{matrix.os}}-${{matrix.build_type}}
-          github-token: ${{secrets.GH_PAT}}
-          run-id: ${{github.event.workflow_run.id}}
+          #run-id: ${{github.event.workflow_run.id}}
           path: ${{runner.workspace}}/reference-golds-2d-${{matrix.os}}-${{matrix.build_type}}
       - name: Download 3D Golds
         if: github.event_name == 'pull_request'
@@ -302,8 +304,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: golds-3d-${{matrix.os}}-${{matrix.build_type}}
-          github-token: ${{secrets.GH_PAT}}
-          run-id: ${{github.event.workflow_run.id}}
+          #run-id: ${{github.event.workflow_run.id}}
           path: ${{runner.workspace}}/reference-golds-3d-${{matrix.os}}-${{matrix.build_type}}
       - name: Configure
         run: |
