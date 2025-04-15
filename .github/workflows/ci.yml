@@ -367,7 +367,7 @@ jobs:
           if [ ${PIPESTATUS[0]} -ne 0 ]; then exit 1; fi; \
           ccache -s
           du -hs ${{matrix.ccache_cache}}
-      - name: Run Reference Version and Compare Output
+      - name: Test Reference and Compare
         if: matrix.reference_comparison == 'ON'
         run : |
           cd ${{runner.workspace}}/build-${{matrix.dim}}d-${{matrix.os}}-${{matrix.build_type}}-reference; \
