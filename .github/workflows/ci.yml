@@ -266,9 +266,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{matrix.ccache_cache}}
-          key: ccache-${{github.workflow}}-${{github.job}}-${{matrix.os}}-${{matrix.build_type}}-git-${{github.sha}}
+          key: ccache-${{github.workflow}}-${{github.job}}-${{matrix.os}}-${{matrix.dim}}-${{matrix.build_type}}-git-${{github.sha}}
           restore-keys: |
-               ccache-${{github.workflow}}-${{github.job}}-${{matrix.os}}-${{matrix.build_type}}-git-
+               ccache-${{github.workflow}}-${{github.job}}-${{matrix.os}}-${{matrix.dim}}-${{matrix.build_type}}-git-
       - name: MASA
         run: |
           # Install MetaPhysicL
@@ -361,8 +361,12 @@ jobs:
       - name: Build Reference Version
         if: matrix.reference_comparison == 'ON'
         run : |
-          cmake --build ${{runner.workspace}}/build-${{matrix.dim}}d-${{matrix.os}}-${{matrix.build_type}}-reference \
-          --parallel ${{env.NPROCS}}; \
+          ccache -z
+            cmake --build ${{runner.workspace}}/build-${{matrix.dim}}d-${{matrix.os}}-${{matrix.build_type}}-reference \
+            --parallel ${{env.NPROCS}}; \
+          if [ ${PIPESTATUS[0]} -ne 0 ]; then exit 1; fi \
+          ccache -s
+          du -hs ${{matrix.ccache_cache}}
       - name: Run Reference Version and Compare Output
         if: matrix.reference_comparison == 'ON'
         run : |
