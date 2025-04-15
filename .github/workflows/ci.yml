@@ -332,39 +332,42 @@ jobs:
           cd ${{runner.workspace}}/build-${{matrix.dim}}d-${{matrix.os}}-${{matrix.build_type}}; \
           ctest ${{matrix.ctest_args}} -VV --output-on-failure; \
           if [ $? -ne 0 ]; then exit 1; fi \
-      - name: Compare to Reference Case
+      - name: Checkout Reference Version
+        if: matrix.reference_comparison == 'ON'
         run : |
-          if [ "${{matrix.reference_comparison}}" == "ON" ]; then
-            printf "\n-------- Checking out Reference --------\n"; \
-            git remote add amrexcomb https://github.com/AMReX-Combustion/PeleC.git
-            git fetch amrexcomb development
-            git checkout amrexcomb/development
-            git submodule update --recursive
-            printf "\n-------- Confguring Reference --------\n"; \
-            cmake -B${{runner.workspace}}/build-${{matrix.dim}}d-${{matrix.os}}-${{matrix.build_type}}-reference \
-            -DCMAKE_INSTALL_PREFIX:PATH=${{runner.workspace}}/install-${{matrix.dim}}d-${{matrix.os}}-${{matrix.build_type}}-reference  \
-            -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} \
-            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
-            -DPELE_DIM:STRING=${{matrix.dim}} \
-            -DPELE_ENABLE_MPI:BOOL=ON \
-            -DMPIEXEC_PREFLAGS:STRING=--oversubscribe \
-            -DPELE_ENABLE_FCOMPARE:BOOL=ON \
-            -DPELE_ENABLE_FCOMPARE_FOR_TESTS:BOOL=ON \
-            -DPELE_REFERENCE_GOLDS_DIRECTORY:STRING=${{runner.workspace}}/build-${{matrix.dim}}d-${{matrix.os}}-${{matrix.build_type}} \
-            -DPELE_ENABLE_MASA:BOOL=ON \
-            -DPELE_EXCLUDE_BUILD_IN_CI:BOOL=ON \
-            -DMASA_ROOT:PATH=${{runner.workspace}}/deps/install/MASA \
-            -DCMAKE_CXX_COMPILER_LAUNCHER:STRING=ccache \
-            ${{github.workspace}}; \
-            if [ $? -ne 0 ]; then exit 1; fi; \
-            printf "\n-------- Building Reference --------\n"; \
-            cmake --build ${{runner.workspace}}/build-${{matrix.dim}}d-${{matrix.os}}-${{matrix.build_type}}-reference \
-            --parallel ${{env.NPROCS}}; \
-            printf "\n-------- Running Reference and Comparing--------\n"; \
-            cd ${{runner.workspace}}/build-${{matrix.dim}}d-${{matrix.os}}-${{matrix.build_type}}-reference; \
-            ctest ${{matrix.ctest_args}} -VV --output-on-failure; \
-            if [ $? -ne 0 ]; then exit 1; fi; \
-          fi
+          git remote add amrexcomb https://github.com/AMReX-Combustion/PeleC.git
+          git fetch amrexcomb development
+          git checkout amrexcomb/development
+          git submodule update --recursive
+      - name: Configure Reference Version
+        if: matrix.reference_comparison == 'ON'
+        run : |
+          cmake -B${{runner.workspace}}/build-${{matrix.dim}}d-${{matrix.os}}-${{matrix.build_type}}-reference \
+          -DCMAKE_INSTALL_PREFIX:PATH=${{runner.workspace}}/install-${{matrix.dim}}d-${{matrix.os}}-${{matrix.build_type}}-reference  \
+          -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} \
+          -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON \
+          -DPELE_DIM:STRING=${{matrix.dim}} \
+          -DPELE_ENABLE_MPI:BOOL=ON \
+          -DMPIEXEC_PREFLAGS:STRING=--oversubscribe \
+          -DPELE_ENABLE_FCOMPARE:BOOL=ON \
+          -DPELE_ENABLE_FCOMPARE_FOR_TESTS:BOOL=ON \
+          -DPELE_REFERENCE_GOLDS_DIRECTORY:STRING=${{runner.workspace}}/build-${{matrix.dim}}d-${{matrix.os}}-${{matrix.build_type}} \
+          -DPELE_ENABLE_MASA:BOOL=ON \
+          -DPELE_EXCLUDE_BUILD_IN_CI:BOOL=ON \
+          -DMASA_ROOT:PATH=${{runner.workspace}}/deps/install/MASA \
+          -DCMAKE_CXX_COMPILER_LAUNCHER:STRING=ccache \
+          ${{github.workspace}}; \
+          if [ $? -ne 0 ]; then exit 1; fi; \
+      - name: Build Reference Version
+        if: matrix.reference_comparison == 'ON'
+        run : |
+          cmake --build ${{runner.workspace}}/build-${{matrix.dim}}d-${{matrix.os}}-${{matrix.build_type}}-reference \
+          --parallel ${{env.NPROCS}}; \
+      - name: Run Reference Version and Compare Output
+        if: matrix.reference_comparison == 'ON'
+        run : |
+          ctest ${{matrix.ctest_args}} -VV --output-on-failure; \
+          if [ $? -ne 0 ]; then exit 1; fi; \
 
   GPU-Nvidia:
     name: GPU-CUDA
