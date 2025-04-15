@@ -371,16 +371,14 @@ jobs:
             ${{runner.workspace}}/reference-golds-${DIM}d-${{matrix.os}}-${{matrix.build_type}}; \
           done)
       - name: Upload 2D Golds
-        if: success() || failure()
-        #if: github.event_name == 'push' && github.ref == 'refs/heads/development'
+        if: success() || failure() && github.event_name == 'push' && github.ref == 'refs/heads/development'
         uses: actions/upload-artifact@v4
         with:
           name: golds-2d-${{matrix.os}}-${{matrix.build_type}}
           path: ${{runner.workspace}}/reference-golds-2d-${{matrix.os}}-${{matrix.build_type}}
           overwrite: true
       - name: Upload 3D Golds
-        if: success() || failure()
-        #if: github.event_name == 'push' && github.ref == 'refs/heads/development'
+        if: success() || failure() && github.event_name == 'push' && github.ref == 'refs/heads/development'
         uses: actions/upload-artifact@v4
         with:
           name: golds-3d-${{matrix.os}}-${{matrix.build_type}}
