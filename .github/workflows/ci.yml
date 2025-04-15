@@ -291,7 +291,6 @@ jobs:
           make install
       - name: Configure
         run: |
-          printf "\n-------- Configuring --------\n"; \
           cmake -B${{runner.workspace}}/build-${{matrix.dim}}d-${{matrix.os}}-${{matrix.build_type}} \
           -DCMAKE_INSTALL_PREFIX:PATH=${{runner.workspace}}/install-${{matrix.dim}}d-${{matrix.os}}-${{matrix.build_type}} \
           -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} \
@@ -311,7 +310,6 @@ jobs:
       - name: Build
         run: |
           ccache -z
-          printf "\n-------- Building --------\n"; \
             cmake --build ${{runner.workspace}}/build-${{matrix.dim}}d-${{matrix.os}}-${{matrix.build_type}} \
             --parallel ${{env.NPROCS}} 2>&1 | tee -a ${{runner.workspace}}/build-output.txt; \
           if [ ${PIPESTATUS[0]} -ne 0 ]; then exit 1; fi \
@@ -331,7 +329,6 @@ jobs:
           exit ${return}
       - name: Test
         run: |
-          printf "\n-------- Testing --------\n"; \
           cd ${{runner.workspace}}/build-${{matrix.dim}}d-${{matrix.os}}-${{matrix.build_type}}; \
           ctest ${{matrix.ctest_args}} -VV --output-on-failure; \
           if [ $? -ne 0 ]; then exit 1; fi \
