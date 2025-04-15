@@ -303,6 +303,7 @@ jobs:
           fi
           (for DIM in 2 3; do \
             printf "\n-------- Configuring ${DIM}D --------\n"; \
+            mkdir -p ${{runner.workspace}}/reference-golds-${DIM}d-${{matrix.os}}-${{matrix.build_type}}; \
             mkdir -p ${{runner.workspace}}/saved-golds-${DIM}d-${{matrix.os}}-${{matrix.build_type}}; \
             cmake -B${{runner.workspace}}/build-${DIM}d-${{matrix.os}}-${{matrix.build_type}} \
             -DCMAKE_INSTALL_PREFIX:PATH=${{runner.workspace}}/install-${DIM}d-${{matrix.os}}-${{matrix.build_type}} \
