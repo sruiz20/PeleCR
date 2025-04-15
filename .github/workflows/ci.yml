@@ -286,10 +286,23 @@ jobs:
             --prefix="${{runner.workspace}}/deps/install/MASA"
           make -j ${{env.NPROCS}}
           make install
+      - name: Download Golds
+        uses: actions/download-artifact@v4
+        with:
+          name: golds-${{matrix.os}}-${{matrix.build_type}}
+          path: |
+            ${{runner.workspace}}/golds-2d-${{matrix.os}}-${{matrix.build_type}}
+            ${{runner.workspace}}/golds-3d-${{matrix.os}}-${{matrix.build_type}}
       - name: Configure
         run: |
+          if [ "${{github.event_name}}" == 'pull_request' ]; then
+            export FCOMPARE=ON
+          else
+            export FCOMPARE=OFF
+          fi
           (for DIM in 2 3; do \
             printf "\n-------- Configuring ${DIM}D --------\n"; \
+            mkdir -p ${{runner.workspace}}/golds-${DIM}d-${{matrix.os}}-${{matrix.build_type}} \
             cmake -B${{runner.workspace}}/build-${DIM}d-${{matrix.os}}-${{matrix.build_type}} \
             -DCMAKE_INSTALL_PREFIX:PATH=${{runner.workspace}}/install-${DIM}d-${{matrix.os}}-${{matrix.build_type}} \
             -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} \
@@ -297,9 +310,11 @@ jobs:
             -DPELE_DIM:STRING=${DIM} \
             -DPELE_ENABLE_MPI:BOOL=ON \
             -DMPIEXEC_PREFLAGS:STRING=--oversubscribe \
-            -DPELE_ENABLE_FCOMPARE_FOR_TESTS:BOOL=OFF \
+            -DPELE_ENABLE_FCOMPARE_FOR_TESTS:BOOL=${FCOMPARE} \
             -DPELE_ENABLE_MASA:BOOL=ON \
             -DPELE_EXCLUDE_BUILD_IN_CI:BOOL=ON \
+            -DPELE_SAVE_GOLDS:BOOL=ON \
+            -DPELE_SAVED_GOLDS_DIRECTORY=${{runner.workspace}}/golds-${DIM}d-${{matrix.os}}-${{matrix.build_type}} \
             -DMASA_ROOT:PATH=${{runner.workspace}}/deps/install/MASA \
             -DCMAKE_CXX_COMPILER_LAUNCHER:STRING=ccache \
             ${{github.workspace}}; \
@@ -336,6 +351,15 @@ jobs:
             ctest ${{matrix.ctest_args}} -VV --output-on-failure; \
             if [ $? -ne 0 ]; then exit 1; fi \
           done)
+      - name: Upload Golds
+        if: github.event_name == 'push' && github.ref == 'refs/heads/development'
+        uses: actions/upload-artifact@v4
+        with:
+          name: golds-${{matrix.os}}-${{matrix.build_type}}
+          path: |
+            ${{runner.workspace}}/golds-2d-${{matrix.os}}-${{matrix.build_type}}
+            ${{runner.workspace}}/golds-3d-${{matrix.os}}-${{matrix.build_type}}
+          overwrite: true
   GPU-Nvidia:
     name: GPU-CUDA
     needs: [Formatting, CPU-GNUmake]
