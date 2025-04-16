@@ -31,6 +31,7 @@ pc_transcoeff(
   trans.transport(
     get_xi, get_mu, get_lam, get_Ddiag, get_chi, Tloc, rholoc, Yloc, Ddiag,
     chi_mix, mu, xi, lam, tparm);
+  mu *= 1.0005;
   ProblemSpecificFunctions::problem_modify_transport_coeffs(
     get_xi, get_mu, get_lam, get_Ddiag, get_chi, Tloc, rholoc, Yloc, Ddiag,
     chi_mix, mu, xi, lam, tparm, prob_parm, x);
