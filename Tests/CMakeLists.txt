@@ -132,7 +132,7 @@ endfunction(add_test_rn)
 function(add_test_v1 TEST_NAME TEST_SCRIPT_NAME TEST_EXE_DIR)
     setup_test()
     set(RUN_COMMAND "rm -f mmslog datlog && ${MPI_COMMANDS} ${CURRENT_TEST_EXE} ${MPIEXEC_POSTFLAGS} ${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.inp")
-    add_test(${TEST_NAME} bash -c "set -o pipefail && ${RUN_COMMAND} ${RUNTIME_OPTIONS} 2>&1 | ${TEST_NAME}.log && nosetests ${TEST_SCRIPT_NAME}.py")
+    add_test(${TEST_NAME} bash -c "set -o pipefail && ${RUN_COMMAND} ${RUNTIME_OPTIONS} 2>&1 | tee ${TEST_NAME}.log && nosetests ${TEST_SCRIPT_NAME}.py")
     set_tests_properties(${TEST_NAME} PROPERTIES TIMEOUT 18000 PROCESSORS ${PELE_NP} WORKING_DIRECTORY "${CURRENT_TEST_BINARY_DIR}/" LABELS "verification" ATTACHED_FILES "${CURRENT_TEST_BINARY_DIR}/${TEST_NAME}.log")
 endfunction(add_test_v1)
 
