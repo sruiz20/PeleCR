@@ -1105,93 +1105,7 @@ PeleC::post_timestep(int iteration)
     set_typical_values_chem();
   }
 
-  // Deal with Diagnostics
-  if (level == 0) {
-
-    // Timing info
-    int nstep = parent->levelSteps(0);
-    amrex::Real dtlev = parent->dtLevel(0);
-    amrex::Real cumtime = parent->cumTime() + dtlev;
-
-    bool do_diags = false;
-    for (const auto& m_diagnostic : m_diagnostics) {
-      do_diags = do_diags || m_diagnostic->doDiag(cumtime, nstep);
-    }
-
-    if (do_diags) {
-
-      // Need to update some internal data as the grid changes
-      amrex::Vector<amrex::Geometry> geomAll(finest_level + 1);
-      amrex::Vector<amrex::BoxArray> gridAll(finest_level + 1);
-      amrex::Vector<amrex::DistributionMapping> dmapAll(finest_level + 1);
-      for (int lev = 0; lev <= finest_level; ++lev) {
-        auto& amrlevel = parent->getLevel(lev);
-        geomAll[lev] = amrlevel.Geom();
-        gridAll[lev] = amrlevel.boxArray();
-        dmapAll[lev] = amrlevel.DistributionMap();
-      }
-      for (const auto& m_diagnostic : m_diagnostics) {
-        m_diagnostic->prepare(
-          finest_level + 1, geomAll, gridAll, dmapAll, m_diagVars);
-      }
-
-      // Assemble a vector of MF containing the requested data
-      amrex::Vector<std::unique_ptr<amrex::MultiFab>> diagMFVec(
-        finest_level + 1);
-      for (int lev = 0; lev <= finest_level; ++lev) {
-        auto& amrlevel = parent->getLevel(lev);
-        amrex::MultiFab S_data(
-          amrlevel.get_new_data(State_Type).boxArray(),
-          amrlevel.get_new_data(State_Type).DistributionMap(), NVAR, 1,
-          amrex::MFInfo(), amrlevel.Factory());
-        amrex::MultiFab R_data(
-          amrlevel.get_new_data(Reactions_Type).boxArray(),
-          amrlevel.get_new_data(Reactions_Type).DistributionMap(),
-          NUM_SPECIES + 2, 1, amrex::MFInfo(), amrlevel.Factory());
-        FillPatch(
-          amrlevel, S_data, S_data.nGrow(), cumtime, State_Type, Density, NVAR,
-          0);
-        FillPatch(
-          amrlevel, R_data, R_data.nGrow(), cumtime, Reactions_Type, 0,
-          NUM_SPECIES + 2, 0);
-
-        diagMFVec[lev] = std::make_unique<amrex::MultiFab>(
-          amrlevel.boxArray(), amrlevel.DistributionMap(), m_diagVars.size(),
-          1);
-        for (int v{0}; v < m_diagVars.size(); ++v) {
-          // Already tested: either a derive or a state variable
-          if (derive_lst.canDerive(m_diagVars[v])) {
-            auto mf = amrlevel.derive(m_diagVars[v], cumtime, 1);
-            const amrex::DeriveRec* rec = derive_lst.get(m_diagVars[v]);
-            int varIdx{0};
-            for (int vd{0}; vd < rec->numDerive(); ++vd) {
-              if (m_diagVars[v] == rec->variableName(vd)) {
-                varIdx = vd;
-                break;
-              }
-            }
-            amrex::MultiFab::Copy(*diagMFVec[lev], *mf, varIdx, v, 1, 1);
-          } else {
-            int StIndex = 0;
-            int scomp = 0;
-            isStateVariable(m_diagVars[v], StIndex, scomp);
-            if (StIndex == State_Type) {
-              amrex::MultiFab::Copy(*diagMFVec[lev], S_data, scomp, v, 1, 1);
-            } else if (StIndex == Reactions_Type) {
-              amrex::MultiFab::Copy(*diagMFVec[lev], R_data, scomp, v, 1, 1);
-            }
-          }
-        }
-      }
-
-      for (const auto& m_diagnostic : m_diagnostics) {
-        if (m_diagnostic->doDiag(cumtime, nstep)) {
-          m_diagnostic->processDiag(
-            nstep, cumtime, amrex::GetVecOfConstPtrs(diagMFVec), m_diagVars);
-        }
-      }
-    }
-  }
+  do_diagnostics();
 }
 
 void
@@ -1328,6 +1242,8 @@ PeleC::post_init(amrex::Real /*stop_time*/)
       monitor_extrema();
     }
   }
+
+  do_diagnostics();
 }
 
 int
@@ -2087,6 +2003,100 @@ PeleC::init_diagnostics()
       m_diagnostics.emplace_back(DiagBase::create(diag_type));
       m_diagnostics[n]->init(diag_prefix, diags[n]);
       m_diagnostics[n]->addVars(m_diagVars);
+    }
+  }
+}
+
+void
+PeleC::do_diagnostics()
+{
+
+  // Deal with Diagnostics
+  if (level == 0) {
+
+    // Timing info
+    const int nstep = parent->levelSteps(0);
+    const int finest_level = parent->finestLevel();
+    const amrex::Real dtlev = parent->dtLevel(0);
+    const amrex::Real cumtime = parent->cumTime() + dtlev;
+
+    bool do_diags = false;
+    for (const auto& m_diagnostic : m_diagnostics) {
+      do_diags = do_diags || m_diagnostic->doDiag(cumtime, nstep);
+    }
+
+    if (do_diags) {
+
+      // Need to update some internal data as the grid changes
+      amrex::Vector<amrex::Geometry> geomAll(finest_level + 1);
+      amrex::Vector<amrex::BoxArray> gridAll(finest_level + 1);
+      amrex::Vector<amrex::DistributionMapping> dmapAll(finest_level + 1);
+      for (int lev = 0; lev <= finest_level; ++lev) {
+        auto& amrlevel = parent->getLevel(lev);
+        geomAll[lev] = amrlevel.Geom();
+        gridAll[lev] = amrlevel.boxArray();
+        dmapAll[lev] = amrlevel.DistributionMap();
+      }
+      for (const auto& m_diagnostic : m_diagnostics) {
+        m_diagnostic->prepare(
+          finest_level + 1, geomAll, gridAll, dmapAll, m_diagVars);
+      }
+
+      // Assemble a vector of MF containing the requested data
+      amrex::Vector<std::unique_ptr<amrex::MultiFab>> diagMFVec(
+        finest_level + 1);
+      for (int lev = 0; lev <= finest_level; ++lev) {
+        auto& amrlevel = parent->getLevel(lev);
+        amrex::MultiFab S_data(
+          amrlevel.get_new_data(State_Type).boxArray(),
+          amrlevel.get_new_data(State_Type).DistributionMap(), NVAR, 1,
+          amrex::MFInfo(), amrlevel.Factory());
+        amrex::MultiFab R_data(
+          amrlevel.get_new_data(Reactions_Type).boxArray(),
+          amrlevel.get_new_data(Reactions_Type).DistributionMap(),
+          NUM_SPECIES + 2, 1, amrex::MFInfo(), amrlevel.Factory());
+        FillPatch(
+          amrlevel, S_data, S_data.nGrow(), cumtime, State_Type, Density, NVAR,
+          0);
+        FillPatch(
+          amrlevel, R_data, R_data.nGrow(), cumtime, Reactions_Type, 0,
+          NUM_SPECIES + 2, 0);
+
+        diagMFVec[lev] = std::make_unique<amrex::MultiFab>(
+          amrlevel.boxArray(), amrlevel.DistributionMap(), m_diagVars.size(),
+          1);
+        for (int v{0}; v < m_diagVars.size(); ++v) {
+          // Already tested: either a derive or a state variable
+          if (derive_lst.canDerive(m_diagVars[v])) {
+            auto mf = amrlevel.derive(m_diagVars[v], cumtime, 1);
+            const amrex::DeriveRec* rec = derive_lst.get(m_diagVars[v]);
+            int varIdx{0};
+            for (int vd{0}; vd < rec->numDerive(); ++vd) {
+              if (m_diagVars[v] == rec->variableName(vd)) {
+                varIdx = vd;
+                break;
+              }
+            }
+            amrex::MultiFab::Copy(*diagMFVec[lev], *mf, varIdx, v, 1, 1);
+          } else {
+            int StIndex = 0;
+            int scomp = 0;
+            isStateVariable(m_diagVars[v], StIndex, scomp);
+            if (StIndex == State_Type) {
+              amrex::MultiFab::Copy(*diagMFVec[lev], S_data, scomp, v, 1, 1);
+            } else if (StIndex == Reactions_Type) {
+              amrex::MultiFab::Copy(*diagMFVec[lev], R_data, scomp, v, 1, 1);
+            }
+          }
+        }
+      }
+
+      for (const auto& m_diagnostic : m_diagnostics) {
+        if (m_diagnostic->doDiag(cumtime, nstep)) {
+          m_diagnostic->processDiag(
+            nstep, cumtime, amrex::GetVecOfConstPtrs(diagMFVec), m_diagVars);
+        }
+      }
     }
   }
 }

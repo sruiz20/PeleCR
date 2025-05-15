@@ -702,6 +702,7 @@ protected:
   void init_filters();
 
   void init_diagnostics();
+  void do_diagnostics();
 
 #ifdef PELE_USE_MASA
   static void init_mms();
