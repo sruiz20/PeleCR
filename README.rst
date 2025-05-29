@@ -1,7 +1,7 @@
 PeleC: An adaptive mesh refinement solver for compressible reacting flows
 -------------------------------------------------------------------------
 
-`Documentation <https://amrex-combustion.github.io/PeleC/>`_ | `Nightly Test Results <https://my.cdash.org/index.php?project=PeleC>`_ | `PeleC Citation <https://doi.org/10.1177/10943420221121151>`_ | `Pele Citation <https://doi.org/10.1137/1.9781611977967.2>`_
+`Documentation <https://amrex-combustion.github.io/PeleC/>`_ | `Nightly Test Results <https://my.cdash.org/index.php?project=Pele>`_ | `PeleC Citation <https://doi.org/10.1177/10943420221121151>`_ | `Pele Citation <https://doi.org/10.1137/1.9781611977967.2>`_
 
 Getting Started
 ~~~~~~~~~~~~~~~
@@ -80,7 +80,7 @@ To add a new feature to PeleC, the procedure is:
 Test Status
 ~~~~~~~~~~~
 
-Nightly test results for PeleC against multiple compilers and machines can be seen on its `CDash page <https://my.cdash.org/index.php?project=PeleC>`_.
+Nightly test results for PeleC against multiple compilers and machines can be seen on its `CDash page <https://my.cdash.org/index.php?project=Pele>`_.
 
 Documentation
 ~~~~~~~~~~~~~
