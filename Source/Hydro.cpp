@@ -292,8 +292,9 @@ PeleC::construct_hydro_source(
       amrex::Print() << "WARNING -- EFFECTIVE CFL AT THIS LEVEL " << level
                      << " IS " << courno << '\n';
       if (hard_cfl_limit) {
-        amrex::Abort("CFL is too high at this level -- go back to a checkpoint "
-                     "and restart with lower cfl number");
+        amrex::Abort(
+          "CFL is too high at this level -- go back to a checkpoint "
+          "and restart with lower cfl number");
       }
     }
   }
@@ -435,8 +436,9 @@ pc_adjust_fluxes_eb(
   // These are the fluxes on face centroids -- they are defined in
   // eb_compute_div
   //    and are the fluxes that go into the flux registers
-  AMREX_D_TERM(auto const& fx_arr = flux[0];, auto const& fy_arr = flux[1];
-               , auto const& fz_arr = flux[2];);
+  AMREX_D_TERM(
+    auto const& fx_arr = flux[0];, auto const& fy_arr = flux[1];
+    , auto const& fz_arr = flux[2];);
 
   // Compute divu to be used in artificial viscosity
   auto bx_divu = amrex::Box(q_arr);
@@ -589,16 +591,16 @@ pc_consup_eb(
   // These are the fluxes we computed in MOL_umeth_eb and modified in
   // adjust_fluxes_eb
   //  -- they live at face centers
-  AMREX_D_TERM(auto const& fx_in_arr = flux_tmp[0];
-               , auto const& fy_in_arr = flux_tmp[1];
-               , auto const& fz_in_arr = flux_tmp[2];);
+  AMREX_D_TERM(
+    auto const& fx_in_arr = flux_tmp[0];, auto const& fy_in_arr = flux_tmp[1];
+    , auto const& fz_in_arr = flux_tmp[2];);
 
   // These are the fluxes on face centroids -- they are defined in
   // eb_compute_div
   //    and are the fluxes that go into the flux registers
-  AMREX_D_TERM(auto const& fx_out_arr = flux[0];
-               , auto const& fy_out_arr = flux[1];
-               , auto const& fz_out_arr = flux[2];);
+  AMREX_D_TERM(
+    auto const& fx_out_arr = flux[0];, auto const& fy_out_arr = flux[1];
+    , auto const& fz_out_arr = flux[2];);
 
   auto const& blo = bx.smallEnd();
   auto const& bhi = bx.bigEnd();
@@ -671,12 +673,14 @@ pc_umdrv_eb(
 
   amrex::Array4<amrex::Real const> AMREX_D_DECL(fcx, fcy, fcz),
     AMREX_D_DECL(apx, apy, apz), ccc;
-  AMREX_D_TERM(fcx = fact->getFaceCent()[0]->const_array(mfi);
-               , fcy = fact->getFaceCent()[1]->const_array(mfi);
-               , fcz = fact->getFaceCent()[2]->const_array(mfi););
-  AMREX_D_TERM(apx = fact->getAreaFrac()[0]->const_array(mfi);
-               , apy = fact->getAreaFrac()[1]->const_array(mfi);
-               , apz = fact->getAreaFrac()[2]->const_array(mfi););
+  AMREX_D_TERM(
+    fcx = fact->getFaceCent()[0]->const_array(mfi);
+    , fcy = fact->getFaceCent()[1]->const_array(mfi);
+    , fcz = fact->getFaceCent()[2]->const_array(mfi););
+  AMREX_D_TERM(
+    apx = fact->getAreaFrac()[0]->const_array(mfi);
+    , apy = fact->getAreaFrac()[1]->const_array(mfi);
+    , apz = fact->getAreaFrac()[2]->const_array(mfi););
   ccc = fact->getCentroid().const_array(mfi);
 
   const auto* domlo = geom.Domain().loVect();
@@ -745,8 +749,9 @@ pc_umdrv_eb(
 #endif
 
   // Construct divu
-  AMREX_D_TERM(const amrex::Real dx0 = dx[0];, const amrex::Real dx1 = dx[1];
-               , const amrex::Real dx2 = dx[2];);
+  AMREX_D_TERM(
+    const amrex::Real dx0 = dx[0];, const amrex::Real dx1 = dx[1];
+    , const amrex::Real dx2 = dx[2];);
 
   amrex::ParallelFor(
     bxg_ii, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
