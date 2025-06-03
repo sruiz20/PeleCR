@@ -748,8 +748,9 @@ PeleC::initLevelDataFromPlt(
   const int lev, const std::string& dataPltFile, amrex::MultiFab& S_new)
 {
   if (do_rf) {
-    amrex::Error("PeleC::initLevelDataFromPlt(): Restart from plot file not "
-                 "yet supported with rotational frame");
+    amrex::Error(
+      "PeleC::initLevelDataFromPlt(): Restart from plot file not "
+      "yet supported with rotational frame");
     // not ready for rotational frames, relatively simple modification for
     // computing energy from velocities required
   }

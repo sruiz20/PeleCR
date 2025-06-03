@@ -571,12 +571,14 @@ PeleC::getMOLSrcTerm(
       amrex::FArrayBox dm_as_fine(
         amrex::Box::TheUnitBox(), MOLSrcTerm.nComp(), amrex::The_Async_Arena());
       if (eb_in_domain && (typ != amrex::FabType::regular)) {
-        AMREX_D_TERM(auto apx = areafrac[0]->const_array(mfi);
-                     , auto apy = areafrac[1]->const_array(mfi);
-                     , auto apz = areafrac[2]->const_array(mfi););
-        AMREX_D_TERM(auto fcx = facecent[0]->const_array(mfi);
-                     , auto fcy = facecent[1]->const_array(mfi);
-                     , auto fcz = facecent[2]->const_array(mfi););
+        AMREX_D_TERM(
+          auto apx = areafrac[0]->const_array(mfi);
+          , auto apy = areafrac[1]->const_array(mfi);
+          , auto apz = areafrac[2]->const_array(mfi););
+        AMREX_D_TERM(
+          auto fcx = facecent[0]->const_array(mfi);
+          , auto fcy = facecent[1]->const_array(mfi);
+          , auto fcz = facecent[2]->const_array(mfi););
         auto ccc = fact.getCentroid().const_array(mfi);
 
         amrex::FArrayBox tmpfab(

@@ -202,8 +202,9 @@ pc_plm_d(
   const amrex::Real alphap = 0.5 * (dp / (rho * cc) + dvel[dir]) * rho / cc;
   const amrex::Real alpha0r = drho - dp / cs;
   const amrex::Real alpha0e = drhoe - dp * enth;
-  AMREX_D_TERM(, const amrex::Real alpha0v = dvel[l_idx[1]];
-               , const amrex::Real alpha0w = dvel[l_idx[2]];)
+  AMREX_D_TERM(
+    , const amrex::Real alpha0v = dvel[l_idx[1]];
+    , const amrex::Real alpha0w = dvel[l_idx[2]];)
   const amrex::GpuArray<amrex::Real, 3> wv = {
     vel[dir] - cc, vel[dir], vel[dir] + cc};
 
@@ -352,8 +353,9 @@ pc_plm_d_eb(
   const amrex::Real alphap = 0.5 * (dp / (rho * cc) + dvel[dir]) * rho / cc;
   const amrex::Real alpha0r = drho - dp / cs;
   const amrex::Real alpha0e = drhoe - dp * enth;
-  AMREX_D_TERM(, const amrex::Real alpha0v = dvel[l_idx[1]];
-               , const amrex::Real alpha0w = dvel[l_idx[2]];)
+  AMREX_D_TERM(
+    , const amrex::Real alpha0v = dvel[l_idx[1]];
+    , const amrex::Real alpha0w = dvel[l_idx[2]];)
   const amrex::GpuArray<amrex::Real, 3> wv = {
     vel[dir] - cc, vel[dir], vel[dir] + cc};
 
@@ -384,12 +386,13 @@ pc_plm_d_eb(
     const amrex::Real azeright = 0.25 * dtdx * (wv[0] - wv[1]) *
                                  (1.0 - amrex::Math::copysign(1.0, wv[1])) *
                                  alpha0e;
-    AMREX_D_TERM(, const amrex::Real azv1rght =
-                     0.25 * dtdx * (wv[0] - wv[1]) *
-                     (1.0 - amrex::Math::copysign(1.0, wv[1])) * alpha0v;
-                 , const amrex::Real azw1rght =
-                     0.25 * dtdx * (wv[0] - wv[1]) *
-                     (1.0 - amrex::Math::copysign(1.0, wv[1])) * alpha0w;)
+    AMREX_D_TERM(
+      , const amrex::Real azv1rght = 0.25 * dtdx * (wv[0] - wv[1]) *
+                                     (1.0 - amrex::Math::copysign(1.0, wv[1])) *
+                                     alpha0v;
+      , const amrex::Real azw1rght = 0.25 * dtdx * (wv[0] - wv[1]) *
+                                     (1.0 - amrex::Math::copysign(1.0, wv[1])) *
+                                     alpha0w;)
 
     qp(iv, QRHO) = rho_ref + apright + amright + azrright;
     qp(iv, QRHO) =
@@ -437,12 +440,13 @@ pc_plm_d_eb(
     const amrex::Real azeleft = 0.25 * dtdx * (wv[2] - wv[1]) *
                                 (1.0 + amrex::Math::copysign(1.0, wv[1])) *
                                 alpha0e;
-    AMREX_D_TERM(, const amrex::Real azv1left =
-                     0.25 * dtdx * (wv[2] - wv[1]) *
-                     (1.0 + amrex::Math::copysign(1.0, wv[1])) * alpha0v;
-                 , const amrex::Real azw1left =
-                     0.25 * dtdx * (wv[2] - wv[1]) *
-                     (1.0 + amrex::Math::copysign(1.0, wv[1])) * alpha0w;)
+    AMREX_D_TERM(
+      , const amrex::Real azv1left = 0.25 * dtdx * (wv[2] - wv[1]) *
+                                     (1.0 + amrex::Math::copysign(1.0, wv[1])) *
+                                     alpha0v;
+      , const amrex::Real azw1left = 0.25 * dtdx * (wv[2] - wv[1]) *
+                                     (1.0 + amrex::Math::copysign(1.0, wv[1])) *
+                                     alpha0w;)
     qm(ivp, QRHO) = rho_ref + apleft + amleft + azrleft;
     qm(ivp, QRHO) =
       amrex::max<amrex::Real>(qm(ivp, QRHO), constants::very_small_num());

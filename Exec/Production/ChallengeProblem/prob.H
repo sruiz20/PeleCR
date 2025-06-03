@@ -382,9 +382,10 @@ struct MyProblemSpecificFunctions : public DefaultProblemSpecificFunctions
     const int /*level*/,
     ProbParmDevice const& prob_parm) noexcept
   {
-    AMREX_D_TERM(const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
-                 , const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
-                 , const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];);
+    AMREX_D_TERM(
+      const amrex::Real x = prob_lo[0] + (i + 0.5) * dx[0];
+      , const amrex::Real y = prob_lo[1] + (j + 0.5) * dx[1];
+      , const amrex::Real z = prob_lo[2] + (k + 0.5) * dx[2];);
 
     // Tag around the jets
     const amrex::Real dphi_angle = 2.0 * constants::PI() / prob_parm.nholes;

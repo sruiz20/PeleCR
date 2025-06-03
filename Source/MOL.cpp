@@ -225,9 +225,10 @@ pc_compute_hyp_mol_flux_eb(
       amrex::Real flux_tmp[NVAR] = {0.0};
 
       if (!eb_problem_state) {
-        AMREX_D_TERM(flux_tmp[UMX] = -q(iv, QPRES) * ebnorm[0];
-                     , flux_tmp[UMY] = -q(iv, QPRES) * ebnorm[1];
-                     , flux_tmp[UMZ] = -q(iv, QPRES) * ebnorm[2];)
+        AMREX_D_TERM(
+          flux_tmp[UMX] = -q(iv, QPRES) * ebnorm[0];
+          , flux_tmp[UMY] = -q(iv, QPRES) * ebnorm[1];
+          , flux_tmp[UMZ] = -q(iv, QPRES) * ebnorm[2];)
       } else {
         auto eos = pele::physics::PhysicsType::eos();
         amrex::Real qtempl[R_NUM] = {0.0};
@@ -331,14 +332,16 @@ pc_compute_hyp_mol_flux_eb(
           }
 
           const amrex::Real tmp_flx_umx = flux_tmp[UMX];
-          AMREX_D_TERM(flux_tmp[UMX] = -tmp_flx_umx * ebnorm[0];
-                       , flux_tmp[UMY] = -tmp_flx_umx * ebnorm[1];
-                       , flux_tmp[UMZ] = -tmp_flx_umx * ebnorm[2];)
+          AMREX_D_TERM(
+            flux_tmp[UMX] = -tmp_flx_umx * ebnorm[0];
+            , flux_tmp[UMY] = -tmp_flx_umx * ebnorm[1];
+            , flux_tmp[UMZ] = -tmp_flx_umx * ebnorm[2];)
 
         } else {
-          AMREX_D_TERM(flux_tmp[UMX] = -q(iv, QPRES) * ebnorm[0];
-                       , flux_tmp[UMY] = -q(iv, QPRES) * ebnorm[1];
-                       , flux_tmp[UMZ] = -q(iv, QPRES) * ebnorm[2];)
+          AMREX_D_TERM(
+            flux_tmp[UMX] = -q(iv, QPRES) * ebnorm[0];
+            , flux_tmp[UMY] = -q(iv, QPRES) * ebnorm[1];
+            , flux_tmp[UMZ] = -q(iv, QPRES) * ebnorm[2];)
         }
       }
 
