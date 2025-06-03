@@ -15,6 +15,8 @@
 #include "PeleC.H"
 #include "PeleCAmr.H"
 
+using namespace amrex::mpidatatypes;
+
 std::string inputs_name;
 
 void initialize_EB2(
