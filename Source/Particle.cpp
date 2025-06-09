@@ -183,7 +183,7 @@ PeleC::initParticles()
 }
 
 void
-PeleC::postRestartParticles()
+PeleC::postRestartParticles(const std::string& restart_file)
 {
   if (level > 0) {
     defineSpraySource(parent->MaxRefRatio(level - 1));
@@ -195,7 +195,7 @@ PeleC::postRestartParticles()
     AMREX_ASSERT(SprayPC == nullptr);
     createDataParticles();
 
-    SprayPC->SprayInitialize();
+    SprayPC->SprayInitialize(restart_file);
     amrex::Gpu::Device::streamSynchronize();
   }
 }
