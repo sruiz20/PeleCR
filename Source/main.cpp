@@ -15,6 +15,8 @@
 #include "PeleC.H"
 #include "PeleCAmr.H"
 
+using namespace amrex::mpidatatypes;
+
 std::string inputs_name;
 
 void initialize_EB2(
@@ -101,8 +103,9 @@ main(int argc, char* argv[])
   }
 
   if (max_step < 0 && stop_time < 0.0 && max_wall_time < 0.0) {
-    amrex::Abort("Exiting because neither max_step nor stop_time nor "
-                 "max_wall_time is non-negative.");
+    amrex::Abort(
+      "Exiting because neither max_step nor stop_time nor "
+      "max_wall_time is non-negative.");
   }
 
   // Print the current date and time

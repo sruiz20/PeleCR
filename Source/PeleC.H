@@ -464,9 +464,6 @@ public:
   // Remove data at old time.
   void removeOldData() override;
 
-  // Passes some data about the grid
-  void setGridInfo();
-
   // Print information about energy budget.
   void do_energy_diagnostics();
 
@@ -706,6 +703,7 @@ protected:
   void init_filters();
 
   void init_diagnostics();
+  void do_diagnostics();
 
 #ifdef PELE_USE_MASA
   static void init_mms();

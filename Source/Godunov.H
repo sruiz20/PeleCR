@@ -1088,12 +1088,13 @@ pc_artif_visc(
      bdim[0] * 2 + bdim[1] * 2 + bdim[2] * 1}};
 
   const amrex::IntVect ivpj(iv + amrex::IntVect::TheDimensionVector(l_idx[1]));
-  AMREX_D_TERM(, ,
-               const amrex::IntVect ivpk(
-                 iv + amrex::IntVect::TheDimensionVector(l_idx[2]));
-               const amrex::IntVect ivpp(
-                 iv + amrex::IntVect::TheDimensionVector(l_idx[1]) +
-                 amrex::IntVect::TheDimensionVector(l_idx[2])););
+  AMREX_D_TERM(
+    , ,
+    const amrex::IntVect ivpk(
+      iv + amrex::IntVect::TheDimensionVector(l_idx[2]));
+    const amrex::IntVect ivpp(
+      iv + amrex::IntVect::TheDimensionVector(l_idx[1]) +
+      amrex::IntVect::TheDimensionVector(l_idx[2])););
   const amrex::Real div =
     difmag *
     amrex::min<amrex::Real>(

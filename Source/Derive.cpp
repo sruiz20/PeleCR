@@ -234,9 +234,10 @@ pc_dermagvort(
                  , larr(i, j, k, 2) = dat(i, j, k, UMZ) * rhoInv;)
   });
 
-  AMREX_D_TERM(const amrex::Real dx = geomdata.CellSize(0);
-               , const amrex::Real dy = geomdata.CellSize(1);
-               , const amrex::Real dz = geomdata.CellSize(2););
+  AMREX_D_TERM(
+    const amrex::Real dx = geomdata.CellSize(0);
+    , const amrex::Real dy = geomdata.CellSize(1);
+    , const amrex::Real dz = geomdata.CellSize(2););
 
   // Calculate vorticity.
   amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -247,9 +248,10 @@ pc_dermagvort(
     AMREX_D_TERM(get_idx(i, 0, all_regular, flags(i, j, k), im, ip);
                  , get_idx(j, 1, all_regular, flags(i, j, k), jm, jp);
                  , get_idx(k, 2, all_regular, flags(i, j, k), km, kp);)
-    AMREX_D_TERM(const amrex::Real wi = get_weight(im, ip);
-                 , const amrex::Real wj = get_weight(jm, jp);
-                 , const amrex::Real wk = get_weight(km, kp);)
+    AMREX_D_TERM(
+      const amrex::Real wi = get_weight(im, ip);
+      , const amrex::Real wj = get_weight(jm, jp);
+      , const amrex::Real wk = get_weight(km, kp);)
 
     AMREX_D_TERM(
       vort(i, j, k) = 0.0 * dx;
@@ -291,18 +293,20 @@ pc_derdivu(
   const auto& flags = flag_fab.const_array();
   const bool all_regular = typ == amrex::FabType::regular;
 
-  AMREX_D_TERM(const amrex::Real dx = geomdata.CellSize(0);
-               , const amrex::Real dy = geomdata.CellSize(1);
-               , const amrex::Real dz = geomdata.CellSize(2););
+  AMREX_D_TERM(
+    const amrex::Real dx = geomdata.CellSize(0);
+    , const amrex::Real dy = geomdata.CellSize(1);
+    , const amrex::Real dz = geomdata.CellSize(2););
 
   amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
     AMREX_D_TERM(int im; int ip;, int jm; int jp;, int km; int kp;)
     AMREX_D_TERM(get_idx(i, 0, all_regular, flags(i, j, k), im, ip);
                  , get_idx(j, 1, all_regular, flags(i, j, k), jm, jp);
                  , get_idx(k, 2, all_regular, flags(i, j, k), km, kp);)
-    AMREX_D_TERM(const amrex::Real wi = get_weight(im, ip);
-                 , const amrex::Real wj = get_weight(jm, jp);
-                 , const amrex::Real wk = get_weight(km, kp);)
+    AMREX_D_TERM(
+      const amrex::Real wi = get_weight(im, ip);
+      , const amrex::Real wj = get_weight(jm, jp);
+      , const amrex::Real wk = get_weight(km, kp);)
 
     AMREX_D_TERM(
       const amrex::Real uhi = dat(ip, j, k, UMX) / dat(ip, j, k, URHO);
@@ -355,9 +359,10 @@ pc_derenstrophy(
     larr(i, j, k, 2) = dat(i, j, k, UMZ) * rhoInv;
   });
 
-  AMREX_D_TERM(const amrex::Real dx = geomdata.CellSize(0);
-               , const amrex::Real dy = geomdata.CellSize(1);
-               , const amrex::Real dz = geomdata.CellSize(2););
+  AMREX_D_TERM(
+    const amrex::Real dx = geomdata.CellSize(0);
+    , const amrex::Real dy = geomdata.CellSize(1);
+    , const amrex::Real dz = geomdata.CellSize(2););
 
   // Calculate enstrophy.
   amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
@@ -365,9 +370,10 @@ pc_derenstrophy(
     AMREX_D_TERM(get_idx(i, 0, all_regular, flags(i, j, k), im, ip);
                  , get_idx(j, 1, all_regular, flags(i, j, k), jm, jp);
                  , get_idx(k, 2, all_regular, flags(i, j, k), km, kp);)
-    AMREX_D_TERM(const amrex::Real wi = get_weight(im, ip);
-                 , const amrex::Real wj = get_weight(jm, jp);
-                 , const amrex::Real wk = get_weight(km, kp);)
+    AMREX_D_TERM(
+      const amrex::Real wi = get_weight(im, ip);
+      , const amrex::Real wj = get_weight(jm, jp);
+      , const amrex::Real wk = get_weight(km, kp);)
 
     AMREX_D_TERM(
       enstrophy(i, j, k) = 0.0 * dx;
@@ -613,9 +619,10 @@ pc_derradialvel(
     geomdata.ProbHiArray();
   const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx =
     geomdata.CellSizeArray();
-  AMREX_D_TERM(const amrex::Real centerx = 0.5 * (prob_lo[0] + prob_hi[0]);
-               , const amrex::Real centery = 0.5 * (prob_lo[1] + prob_hi[1]);
-               , const amrex::Real centerz = 0.5 * (prob_lo[2] + prob_hi[2]));
+  AMREX_D_TERM(
+    const amrex::Real centerx = 0.5 * (prob_lo[0] + prob_hi[0]);
+    , const amrex::Real centery = 0.5 * (prob_lo[1] + prob_hi[1]);
+    , const amrex::Real centerz = 0.5 * (prob_lo[2] + prob_hi[2]));
 
   amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
     AMREX_D_TERM(

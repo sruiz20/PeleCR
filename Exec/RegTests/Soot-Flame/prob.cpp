@@ -170,9 +170,10 @@ amrex_probinit(
   pp.query("pmf_standoff", PeleC::h_prob_parm_device->standoff);
   pp.get("pmf_datafile", pmf_datafile);
 
-  AMREX_D_TERM(PeleC::h_prob_parm_device->L[0] = probhi[0] - problo[0];
-               , PeleC::h_prob_parm_device->L[1] = probhi[1] - problo[1];
-               , PeleC::h_prob_parm_device->L[2] = probhi[2] - problo[2];);
+  AMREX_D_TERM(
+    PeleC::h_prob_parm_device->L[0] = probhi[0] - problo[0];
+    , PeleC::h_prob_parm_device->L[1] = probhi[1] - problo[1];
+    , PeleC::h_prob_parm_device->L[2] = probhi[2] - problo[2];);
 
   read_pmf(pmf_datafile);
 

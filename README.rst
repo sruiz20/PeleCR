@@ -1,7 +1,7 @@
 PeleC: An adaptive mesh refinement solver for compressible reacting flows
 -------------------------------------------------------------------------
 
-`Documentation <https://amrex-combustion.github.io/PeleC/>`_ | `Nightly Test Results <https://my.cdash.org/index.php?project=PeleC>`_ | `PeleC Citation <https://doi.org/10.1177/10943420221121151>`_ | `Pele Citation <https://doi.org/10.1137/1.9781611977967.2>`_
+`Documentation <https://amrex-combustion.github.io/PeleC/>`_ | `Nightly Test Results <https://my.cdash.org/index.php?project=Pele>`_ | `PeleC Citation <https://doi.org/10.1177/10943420221121151>`_ | `Pele Citation <https://doi.org/10.1137/1.9781611977967.2>`_
 
 Getting Started
 ~~~~~~~~~~~~~~~
@@ -61,7 +61,7 @@ To add a new feature to PeleC, the procedure is:
 
    c. To easily format all source files before commit, use the following command: ::
 
-        find Source Exec \( -name "*.cpp" -o -name "*.H" \) -exec clang-format -i {} +
+        find ./Source ./Exec \( -name "*.cpp" -o -name "*.H" -o -name "*.h" -o -name "*.C" \) -exec clang-format -i {} +
 
 4. If you don't already have a fork of the PeleC repository, follow the `Github instructions <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo>`_ to create one. Then, push a feature branch to your forked PeleC repository: ::
 
@@ -80,7 +80,7 @@ To add a new feature to PeleC, the procedure is:
 Test Status
 ~~~~~~~~~~~
 
-Nightly test results for PeleC against multiple compilers and machines can be seen on its `CDash page <https://my.cdash.org/index.php?project=PeleC>`_.
+Nightly test results for PeleC against multiple compilers and machines can be seen on its `CDash page <https://my.cdash.org/index.php?project=Pele>`_.
 
 Documentation
 ~~~~~~~~~~~~~
@@ -141,6 +141,11 @@ Additionally, to cite the application of PeleC to compressible reacting flows, u
     url = {https://www.sciencedirect.com/science/article/pii/S0010218021002741},
   }
 
+A full list of publications documenting the development of the Pele suite and its
+application to various reacting flow and other simulations is available on the main
+`Pele suite page <https://amrex-combustion.github.io/pubs.html>`_. After publication,
+if you'd like your work to be included on that list, you can request to have it added
+`here <https://github.com/AMReX-Combustion/AMReX-Combustion.github.io/discussions/3>`_.
 
 Acknowledgment
 ~~~~~~~~~~~~~~

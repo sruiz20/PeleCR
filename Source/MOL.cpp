@@ -19,14 +19,6 @@ pc_compute_hyp_mol_flux(
   int axisdir,
   bool do_rf)
 {
-  const int R_RHO = 0;
-  const int R_UN = 1;
-  const int R_UT1 = 2;
-  const int R_UT2 = 3;
-  const int R_P = 4;
-  const int R_ADV = 5;
-  const int R_Y = R_ADV + NUM_ADV;
-  const int R_NUM = 5 + NUM_SPECIES + NUM_ADV + NUM_LIN + NUM_AUX;
   const int bc_test_val = 1;
   const bool using_rotframe = do_rf; // local capture
   const auto geomdata = geom.data();
@@ -114,7 +106,6 @@ pc_compute_hyp_mol_flux(
         }
 #endif
 #if NUM_LIN > 0
-        const int R_LIN = R_Y + NUM_SPECIES + NUM_AUX;
         for (int n = 0; n < NUM_LIN; n++) {
           qtempl[R_LIN + n] = q(ivm, QLIN + n) + 0.5 * dq(ivm, QLIN + n);
           qtempr[R_LIN + n] = q(iv, QLIN + n) - 0.5 * dq(iv, QLIN + n);
@@ -123,15 +114,8 @@ pc_compute_hyp_mol_flux(
 
         const amrex::Real cavg = 0.5 * (qaux(iv, QC) + qaux(ivm, QC));
 
-        amrex::Real spl[NUM_SPECIES];
-        for (int n = 0; n < NUM_SPECIES; n++) {
-          spl[n] = qtempl[R_Y + n];
-        }
-
-        amrex::Real spr[NUM_SPECIES];
-        for (int n = 0; n < NUM_SPECIES; n++) {
-          spr[n] = qtempr[R_Y + n];
-        }
+        amrex::Real* spl = &qtempl[R_Y];
+        amrex::Real* spr = &qtempr[R_Y];
 
         amrex::Real flux_tmp[NVAR] = {0.0};
         amrex::Real ustar = 0.0;
@@ -220,14 +204,6 @@ pc_compute_hyp_mol_flux_eb(
 {
 
   const int nextra = 0;
-
-  const int R_RHO = 0;
-  const int R_UN = 1;
-  const int R_UT1 = 2;
-  const int R_UT2 = 3;
-  const int R_P = 4;
-  const int R_ADV = 5;
-  const int R_Y = R_ADV + NUM_ADV;
   const int bc_test_val = 1;
 
   const amrex::Real full_area = AMREX_D_PICK(1.0, dx[0], dx[0] * dx[1]);
@@ -249,13 +225,14 @@ pc_compute_hyp_mol_flux_eb(
       amrex::Real flux_tmp[NVAR] = {0.0};
 
       if (!eb_problem_state) {
-        AMREX_D_TERM(flux_tmp[UMX] = -q(iv, QPRES) * ebnorm[0];
-                     , flux_tmp[UMY] = -q(iv, QPRES) * ebnorm[1];
-                     , flux_tmp[UMZ] = -q(iv, QPRES) * ebnorm[2];)
+        AMREX_D_TERM(
+          flux_tmp[UMX] = -q(iv, QPRES) * ebnorm[0];
+          , flux_tmp[UMY] = -q(iv, QPRES) * ebnorm[1];
+          , flux_tmp[UMZ] = -q(iv, QPRES) * ebnorm[2];)
       } else {
         auto eos = pele::physics::PhysicsType::eos();
-        amrex::Real qtempl[5 + NUM_SPECIES] = {0.0};
-        amrex::Real spl[NUM_SPECIES] = {0.0};
+        amrex::Real qtempl[R_NUM] = {0.0};
+        amrex::Real* spl = &qtempl[R_Y];
         qtempl[R_UN] = -(AMREX_D_TERM(
           q(iv, QU) * ebnorm[0], +q(iv, QV) * ebnorm[1],
           +q(iv, QW) * ebnorm[2]));
@@ -270,14 +247,12 @@ pc_compute_hyp_mol_flux_eb(
 
         // Flip the velocity about the normal for the right state - will use
         // left  state for remainder of right state
-        amrex::Real qtempr[5 + NUM_SPECIES] = {0.0};
+        amrex::Real qtempr[R_NUM] = {0.0};
         qtempr[R_UN] = -1.0 * qtempl[R_UN];
 
         amrex::Real eos_state_rho = qtempl[R_RHO];
         amrex::Real eos_state_p = qtempl[R_P];
-        for (int n = 0; n < NUM_SPECIES; n++) {
-          spl[n] = qtempl[R_Y + n];
-        }
+
         amrex::Real eos_state_T;
         eos.RYP2T(eos_state_rho, spl, eos_state_p, eos_state_T);
         amrex::Real eos_state_e;
@@ -292,10 +267,10 @@ pc_compute_hyp_mol_flux_eb(
         qtempr[R_UT1] = qtempl[R_UT1];
         qtempr[R_UT2] = qtempl[R_UT2];
         qtempr[R_P] = qtempl[R_P];
-        amrex::Real spr[NUM_SPECIES] = {0.0};
-        for (int n = 0; n < NUM_SPECIES; n++) {
-          spr[n] = spl[n];
+        for (int n = R_ADV; n < R_NUM; n++) {
+          qtempr[n] = qtempl[n];
         }
+        amrex::Real* spr = &qtempr[R_Y];
         amrex::Real rhoe_r = rhoe_l;
         amrex::Real gamc_r = gamc_l;
 
@@ -325,7 +300,6 @@ pc_compute_hyp_mol_flux_eb(
             }
 #endif
 #if NUM_LIN > 0
-            const int R_LIN = R_Y + NUM_SPECIES + NUM_AUX;
             for (int n = 0; n < NUM_LIN; n++) {
               pc_cmpflx_passive(
                 ustar, qint_iu, qtempl[R_LIN + n], qtempr[R_LIN + n],
@@ -349,7 +323,6 @@ pc_compute_hyp_mol_flux_eb(
             }
 #endif
 #if NUM_LIN > 0
-            const int R_LIN = R_Y + NUM_SPECIES + NUM_AUX;
             for (int n = 0; n < NUM_LIN; n++) {
               pc_lax_cmpflx_passive(
                 qtempl[R_UN], qtempr[R_UN], 1., 1., qtempl[R_LIN + n],
@@ -359,14 +332,16 @@ pc_compute_hyp_mol_flux_eb(
           }
 
           const amrex::Real tmp_flx_umx = flux_tmp[UMX];
-          AMREX_D_TERM(flux_tmp[UMX] = -tmp_flx_umx * ebnorm[0];
-                       , flux_tmp[UMY] = -tmp_flx_umx * ebnorm[1];
-                       , flux_tmp[UMZ] = -tmp_flx_umx * ebnorm[2];)
+          AMREX_D_TERM(
+            flux_tmp[UMX] = -tmp_flx_umx * ebnorm[0];
+            , flux_tmp[UMY] = -tmp_flx_umx * ebnorm[1];
+            , flux_tmp[UMZ] = -tmp_flx_umx * ebnorm[2];)
 
         } else {
-          AMREX_D_TERM(flux_tmp[UMX] = -q(iv, QPRES) * ebnorm[0];
-                       , flux_tmp[UMY] = -q(iv, QPRES) * ebnorm[1];
-                       , flux_tmp[UMZ] = -q(iv, QPRES) * ebnorm[2];)
+          AMREX_D_TERM(
+            flux_tmp[UMX] = -q(iv, QPRES) * ebnorm[0];
+            , flux_tmp[UMY] = -q(iv, QPRES) * ebnorm[1];
+            , flux_tmp[UMZ] = -q(iv, QPRES) * ebnorm[2];)
         }
       }
 
