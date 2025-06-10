@@ -1123,12 +1123,8 @@ PeleC::post_restart()
     amrex::Gpu::hostToDevice, PeleC::h_prob_parm_device,
     PeleC::h_prob_parm_device + 1, PeleC::d_prob_parm_device);
 
-  amrex::ParmParse ppa("amr");
-  std::string restart_file;
-  ppa.query("restart", restart_file);
-
 #ifdef PELE_USE_SPRAY
-  postRestartParticles(restart_file);
+  postRestartParticles(parent->theRestartFile());
 #endif
   // Initialize the reactor
   if (do_react) {
