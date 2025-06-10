@@ -1124,7 +1124,7 @@ PeleC::post_restart()
     PeleC::h_prob_parm_device + 1, PeleC::d_prob_parm_device);
 
 #ifdef PELE_USE_SPRAY
-  postRestartParticles();
+  postRestartParticles(parent->theRestartFile());
 #endif
   // Initialize the reactor
   if (do_react) {

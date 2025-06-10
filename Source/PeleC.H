@@ -144,7 +144,7 @@ public:
   void createDataParticles();
 
   // How to initialize at restart
-  void postRestartParticles();
+  void postRestartParticles(const std::string& restart_file);
 
   // Post timestep particle functions
   void postTimeStepParticles(int iteration);
