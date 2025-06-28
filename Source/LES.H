@@ -221,17 +221,18 @@ pc_dynamic_smagorinsky_quantities(
   const amrex::Array4<amrex::Real>& flux_T)
 {
   // indexes
-  const int i00 = 0 * AMREX_SPACEDIM + 0; //0
-  const int i01 = 1 * AMREX_SPACEDIM + 0; //3
-  const int i02 = 2 * AMREX_SPACEDIM + 0; //6
-  const int i10 = 0 * AMREX_SPACEDIM + 1; //1
-  const int i11 = 1 * AMREX_SPACEDIM + 1; //4
-  const int i12 = 2 * AMREX_SPACEDIM + 1; //7
-  const int i20 = 0 * AMREX_SPACEDIM + 2; //2
-  const int i21 = 1 * AMREX_SPACEDIM + 2; //5
-  const int i22 = 2 * AMREX_SPACEDIM + 2; //8
+  const int i00 = 0 * AMREX_SPACEDIM + 0; // 0
+  const int i01 = 1 * AMREX_SPACEDIM + 0; // 3
+  const int i02 = 2 * AMREX_SPACEDIM + 0; // 6
+  const int i10 = 0 * AMREX_SPACEDIM + 1; // 1
+  const int i11 = 1 * AMREX_SPACEDIM + 1; // 4
+  const int i12 = 2 * AMREX_SPACEDIM + 1; // 7
+  const int i20 = 0 * AMREX_SPACEDIM + 2; // 2
+  const int i21 = 1 * AMREX_SPACEDIM + 2; // 5
+  const int i22 = 2 * AMREX_SPACEDIM + 2; // 8
 
-  const amrex::Real deltabar = fgr * std::pow(dx[0] * dx[1] * dx[2], static_cast<amrex::Real>(1.0 / 3.0));
+  const amrex::Real deltabar =
+    fgr * std::pow(dx[0] * dx[1] * dx[2], static_cast<amrex::Real>(1.0 / 3.0));
   const amrex::Real dxinv[AMREX_SPACEDIM] = {
     static_cast<amrex::Real>(1.0 / dx[0]),
     static_cast<amrex::Real>(1.0 / dx[1]),
@@ -286,7 +287,8 @@ pc_dynamic_smagorinsky_coeffs(
   const int i21 = 1 * AMREX_SPACEDIM + 2;
   const int i22 = 2 * AMREX_SPACEDIM + 2;
 
-  const amrex::Real deltahat = fgr * std::pow(dx[0] * dx[1] * dx[2], static_cast<amrex::Real>(1.0 / 3.0));
+  const amrex::Real deltahat =
+    fgr * std::pow(dx[0] * dx[1] * dx[2], static_cast<amrex::Real>(1.0 / 3.0));
   const amrex::Real dxinv[AMREX_SPACEDIM] = {
     static_cast<amrex::Real>(1.0 / dx[0]),
     static_cast<amrex::Real>(1.0 / dx[1]),
@@ -496,8 +498,8 @@ get_wale_sfs_stresses(
   alpha0 = 2.0 * mut * (S[dir][0] - (dir == 0 ? Skk / 3.0 : 0.0));
   alpha1 = 2.0 * mut * (S[dir][1] - (dir == 1 ? Skk / 3.0 : 0.0));
   alpha2 = 2.0 * mut * (S[dir][2] - (dir == 2 ? Skk / 3.0 : 0.0));
-  alpha = 2.0 * 0.5 * (q(iv, QRHO) + q(ivm, QRHO)) * deltabar *
-          deltabar * Sijmag * Sijmag;
+  alpha = 2.0 * 0.5 * (q(iv, QRHO) + q(ivm, QRHO)) * deltabar * deltabar *
+          Sijmag * Sijmag;
 
   const amrex::Real dTdx = dxinv * (q(iv, QTEMP) - q(ivm, QTEMP));
   flux_T = mut * dTdx;
@@ -632,13 +634,14 @@ get_vreman_sfs_stresses(
   Sijmag = std::sqrt(2.0 * SijSij);
   const amrex::Real Skk = S[0][0] + S[1][1] + S[2][2];
 
-  const amrex::Real mut = 0.5 * (q(iv, QRHO) + q(ivm, QRHO)) *
-                          (std::sqrt(bbeta / aijaij));
+  const amrex::Real mut =
+    0.5 * (q(iv, QRHO) + q(ivm, QRHO)) * (std::sqrt(bbeta / aijaij));
 
   alpha0 = 2.0 * mut * (S[dir][0] - (dir == 0 ? Skk / 3.0 : 0.0));
   alpha1 = 2.0 * mut * (S[dir][1] - (dir == 1 ? Skk / 3.0 : 0.0));
   alpha2 = 2.0 * mut * (S[dir][2] - (dir == 2 ? Skk / 3.0 : 0.0));
-  alpha = 2.0 * 0.5 * (q(iv, QRHO) + q(ivm, QRHO)) * deltabar * deltabar * Sijmag * Sijmag;
+  alpha = 2.0 * 0.5 * (q(iv, QRHO) + q(ivm, QRHO)) * deltabar * deltabar *
+          Sijmag * Sijmag;
 
   const amrex::Real dTdx = dxinv * (q(iv, QTEMP) - q(ivm, QTEMP));
   flux_T = mut * dTdx;
@@ -673,8 +676,8 @@ pc_vreman_sfs_term(
   const amrex::Real third = 1.0 / 3.0;
   amrex::Real alphaij[AMREX_SPACEDIM] = {0.0}, alpha, flux_T;
   get_vreman_sfs_stresses(
-    i, j, k, q, td, dxinv, deltabar, dir, alphaij[0], alphaij[1],
-    alphaij[2], alpha, flux_T);
+    i, j, k, q, td, dxinv, deltabar, dir, alphaij[0], alphaij[1], alphaij[2],
+    alpha, flux_T);
   const amrex::Real sigmadx =
     c * alphaij[0] - third * CI * alpha * static_cast<amrex::Real>(dir == 0);
   const amrex::Real sigmady =
