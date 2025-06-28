@@ -1,5 +1,5 @@
 # ------------------  INPUTS TO MAIN PROGRAM  -------------------
-max_step = 100000000
+max_step = 10
 stop_time = 0.00249438306
 
 # PROBLEM SIZE & GEOMETRY
@@ -9,7 +9,7 @@ geometry.prob_lo     =   0.0  0.0  0.0
 geometry.prob_hi     =   6.283185307179586232  6.283185307179586232  6.283185307179586232
 # use with single level
 #amr.n_cell           =  8 8 8
-amr.n_cell           =  16    16    16
+amr.n_cell           =  32    16    16
 #amr.n_cell           =  32 32 32
 #amr.n_cell           =  64 64 64
 #amr.n_cell           =  128 128 128
@@ -59,7 +59,7 @@ amr.data_log         = datlog
 amr.max_level       = 0       # maximum level number allowed
 #amr.ref_ratio       = 2 2 2 2 # refinement ratio
 #amr.regrid_int      = 2 2 2 2 # how often to regrid
-amr.blocking_factor = 4       # block factor in grid generation
+amr.blocking_factor = 8       # block factor in grid generation
 amr.max_grid_size   = 64
 amr.n_error_buf     = 2 2 2 2 # number of buffer cells in error est
 
@@ -80,3 +80,19 @@ prob.reynolds_lambda0 = 100.0
 prob.mach_t0 = 0.1
 prob.prandtl = 0.71
 prob.inres = 32
+
+
+
+# ---------------------------------------------------------------
+# Embedded boundary (EB) inputs
+# ---------------------------------------------------------------
+pelec.eb_isothermal = 1     # isothermal wall at EB
+pelec.eb_boundary_T = 300.  # EB wall temperature
+
+#------------------------
+# EB geometry
+#------------------------
+eb2.geom_type = sphere
+eb2.sphere_radius = 0.1
+eb2.sphere_center = 0.0 0.15 0.075
+eb2.sphere_has_fluid_inside = 0

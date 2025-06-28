@@ -655,12 +655,13 @@ PeleC::initData()
   // make sure dx = dy = dz -- that's all we guarantee to support
   const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM> dx = geom.CellSizeArray();
   const amrex::Real small = 1.e-13;
-  if (
+  const bool unequal_dx =
     amrex::max<amrex::Real>(AMREX_D_DECL(
       static_cast<amrex::Real>(0.0),
       static_cast<amrex::Real>(std::abs(dx[0] - dx[1])),
-      static_cast<amrex::Real>(std::abs(dx[0] - dx[2])))) > small * dx[0]) {
-    amrex::Abort("dx != dy != dz not supported");
+      static_cast<amrex::Real>(std::abs(dx[0] - dx[2])))) > small * dx[0];
+  if (eb_in_domain && unequal_dx) {
+    amrex::Abort("dx != dy != dz not supported with EB");
   }
 #endif
 
