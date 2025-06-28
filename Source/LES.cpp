@@ -318,7 +318,7 @@ PeleC::getSmagorinskyLESTerm(
           amrex::ParallelFor(
             eboxes[dir], [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
               pc_smagorinsky_sfs_term(
-                i, j, k, q_ar, tanders[dir], a[dir], dx[dir], dir, Cs_local,
+                i, j, k, q_ar, tanders[dir], a[dir], dx, dir, Cs_local,
                 CI_local, PrT_local, flx[dir]);
             });
         }
@@ -706,7 +706,7 @@ PeleC::getWALELESTerm(
           amrex::ParallelFor(
             eboxes[dir], [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
               pc_wale_sfs_term(
-                i, j, k, q_ar, tanders[dir], a[dir], dx[dir], dir, Cw_local,
+                i, j, k, q_ar, tanders[dir], a[dir], dx, dir, Cw_local,
                 CI_local, PrT_local, flx[dir]);
             });
         }
@@ -813,7 +813,7 @@ PeleC::getVremanLESTerm(
           amrex::ParallelFor(
             eboxes[dir], [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
               pc_vreman_sfs_term(
-                i, j, k, q_ar, tanders[dir], a[dir], dx[dir], dir, Cs_local,
+                i, j, k, q_ar, tanders[dir], a[dir], dx, dir, Cs_local,
                 CI_local, PrT_local, flx[dir]);
             });
         }
