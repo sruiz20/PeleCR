@@ -275,7 +275,7 @@ add_test_r(eb-inflowbc EB-InflowBC)
 if(PELE_DIM GREATER 2)
   add_test_r(shock-cylinder Sod) # can run in 2D but needs input file change
 endif()
-if(PELE_ENABLE_PARTICLES)
+if(PELE_ENABLE_PARTICLES AND NOT PELE_SKIP_NON_FCOMPARE_TESTS)
   if(PELE_DIM EQUAL 2)
     add_test_spray(Spray-Conv)
   endif()
