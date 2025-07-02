@@ -202,6 +202,7 @@ jobs:
     needs: Formatting
     runs-on: ${{matrix.os}}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-24.04, macos-latest]
         build_type: [Release, Debug]
@@ -354,6 +355,7 @@ jobs:
           -DPELE_REFERENCE_GOLDS_DIRECTORY:STRING=${{runner.workspace}}/build-${{matrix.dim}}d-${{matrix.os}}-${{matrix.build_type}} \
           -DPELE_ENABLE_MASA:BOOL=ON \
           -DPELE_EXCLUDE_BUILD_IN_CI:BOOL=ON \
+          -DPELE_SKIP_NON_FCOMPARE_TESTS:BOOL=ON \
           -DMASA_ROOT:PATH=${{runner.workspace}}/deps/install/MASA \
           -DCMAKE_CXX_COMPILER_LAUNCHER:STRING=ccache \
           ${{github.workspace}}
