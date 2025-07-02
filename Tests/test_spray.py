@@ -37,7 +37,7 @@ def multiRun(args):
     # Get the PeleC exec
     run_cmd = args.run_cmd
     test_dir = args.test_dir
-    executable = test_dir + "/" + args.pele_exec
+    executable = args.pele_exec
     if executable == "None":
         for f in os.listdir(test_dir):
             if f.startswith("PeleC") and f.endswith(".ex"):
@@ -75,7 +75,7 @@ def multiRun(args):
         first_params += "amrex.abort_on_unused_inputs=1 "
         # Run first test to iter_2 and save a checkpoint at iter_1
         assert(os.system(
-            "{}{} {} {} {}".format(
+            "{} {} {} {} {}".format(
                 run_cmd, executable, args.input_file, runtime_params, first_params
             )
         ) == 0)
@@ -85,7 +85,7 @@ def multiRun(args):
         second_params += "amr.plot_file = {}/{}_2_plt ".format(test_name, box)
         # Restart a case from checkpoint at iter_1
         assert(os.system(
-            "{}{} {} {} {}".format(
+            "{} {} {} {} {}".format(
                 run_cmd, executable, args.input_file, runtime_params, second_params
             )
         ) == 0)
