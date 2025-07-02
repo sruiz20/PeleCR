@@ -23,53 +23,54 @@ These parameters, once read, are available in the `PeleC` object for use from c+
 
 ::
 
-    # ------------------  INPUTS TO MAIN PROGRAM  -------------------
-    #Stopping criteria: at least one must be specified, simulation
-    #will stop when the first is met.
+    #------------------  INPUTS TO MAIN PROGRAM  -------------------
+    # Stopping criteria: at least one must be specified, simulation
+    # will stop when the first is met.
 
-    #absolute stop time (s) for the simulation
+    # absolute stop time (s) for the simulation
     stop_time = 6
 
-    #maximum number of time steps at base AMR level
+    # maximum number of time steps at base AMR level
     max_step = 30
 
-    #maximum wall time (hr) after which simulation will be stopped
+    # maximum wall time (hr) after which simulation will be stopped
     max_wall_time = 1.0
 
-    # ---------------------------------------------------------------
+    #---------------------------------------------------------------
 
     #------------------------
     # PROBLEM SIZE & GEOMETRY
-    # -----------------------
+    #-----------------------
 
-    #flag for periodicity (here x direction is periodic)
+    # flag for periodicity (here x direction is periodic)
     geometry.is_periodic = 1 0 0
 
-    #0 => cart, 1 => RZ  2=>spherical
+    # 0 => cart, 1 => RZ  2=>spherical
     geometry.coord_sys   = 0
 
-    #coordinates of domain's lower corner
+    # coordinates of domain's lower corner
     geometry.prob_lo     =   -0.3     0.0   0.0
 
-    #coordinates of domain's upper corner
+    # coordinates of domain's upper corner
     geometry.prob_hi     =    0.3     0.3   0.15
 
-    #number of cells along each direction at base level (note: dx=dy=dz)
+    # number of cells along each direction at base level
+    # (dx=dy=dz is required when an embedded boundary is used)
     amr.n_cell           =    128     64    32
-    # ---------------------------------------------------------------
+    #---------------------------------------------------------------
 
-    # ---------------------------------------------------------------
-    PeleC specific inputs
-    # ---------------------------------------------------------------
+    #---------------------------------------------------------------
+    # PeleC specific inputs
+    #---------------------------------------------------------------
 
     # >>>>>>>>>>>>>  BC KEYWORDS <<<<<<<<<<<<<<<<<<<<<<
     # Interior, UserBC, Symmetry, SlipWall, NoSlipWall
     # >>>>>>>>>>>>>  BC KEYWORDS <<<<<<<<<<<<<<<<<<<<<<
 
-    #boundary condition at the lower face of each coordinate direction
+    # boundary condition at the lower face of each coordinate direction
     pelec.lo_bc       =  "Interior"  "UserBC"  "SlipWall"
 
-    #boundary condition at the upper face of each coordinate direction
+    # boundary condition at the upper face of each coordinate direction
     pelec.hi_bc       =  "Interior"  "UserBC"  "SlipWall"
 
     #------------------------
@@ -106,11 +107,11 @@ These parameters, once read, are available in the `PeleC` object for use from c+
     pelec.v            = 1        # verbosity in PeleC cpp files
     amr.v              = 1        # verbosity in Amr.cpp
     #amr.grid_log       = grdlog  # name of grid logging file
-    # ---------------------------------------------------------------
+    #---------------------------------------------------------------
 
-    # ---------------------------------------------------------------
-    AMR specific inputs
-    # ---------------------------------------------------------------
+    #---------------------------------------------------------------
+    # AMR specific inputs
+    #---------------------------------------------------------------
 
     #------------------------
     # REFINEMENT / REGRIDDING
@@ -122,7 +123,7 @@ These parameters, once read, are available in the `PeleC` object for use from c+
     amr.blocking_factor = 8       # block factor in grid generation
     amr.max_grid_size   = 64      # maximum number of cells per box along x,y,z
 
-    #specify species name as flame tracer for
+    # specify species name as flame tracer for
     #refinement purposes
     pelec.flame_trac_name = HO2
 
@@ -153,17 +154,17 @@ These parameters, once read, are available in the `PeleC` object for use from c+
     amr.plot_file         = plt     # root name of plotfile
     amr.plot_int          = 100     # number of timesteps between plotfiles
 
-    #pick which all derived variables to plot
+    # pick which all derived variables to plot
     amr.derive_plot_vars  = pressure x_velocity y_velocity
 
     # we can initialize a solution from a plot file
     pelec.init_pltfile = "plt00000"
 
-    # ---------------------------------------------------------------
+    #---------------------------------------------------------------
 
-    # ---------------------------------------------------------------
-    Embedded boundary (EB) inputs
-    # ---------------------------------------------------------------
+    #---------------------------------------------------------------
+    # Embedded boundary (EB) inputs
+    #---------------------------------------------------------------
 
     pelec.eb_isothermal = 1     # isothermal wall at EB
     pelec.eb_boundary_T = 300.  # EB wall temperature
@@ -178,7 +179,7 @@ These parameters, once read, are available in the `PeleC` object for use from c+
     eb2.sphere_center = 0.0 0.15 0.075
     eb2.sphere_has_fluid_inside = 0
 
-    # ---------------------------------------------------------------
+    #---------------------------------------------------------------
 
 
 .. note::
