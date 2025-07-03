@@ -1,4 +1,5 @@
 /Exec/WORK/*
+.vscode/
 .DS_Store
 datlog
 mmslog
