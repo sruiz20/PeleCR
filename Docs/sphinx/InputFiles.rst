@@ -54,8 +54,7 @@ These parameters, once read, are available in the `PeleC` object for use from c+
     #coordinates of domain's upper corner
     geometry.prob_hi     =    0.3     0.3   0.15
 
-    #number of cells along each direction at base level
-    # (dx=dy=dz is required when an embedded boundary is used)
+    #number of cells along each direction at base level (note: dx=dy=dz)
     amr.n_cell           =    128     64    32
     # ---------------------------------------------------------------
 
