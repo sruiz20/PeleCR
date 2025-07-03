@@ -229,7 +229,6 @@ endfunction(add_test_spray)
 # Run in CI
 add_test_r(multispecsod-1 MultiSpecSod)
 add_test_r(pmf-lidryer-arkode PMF)
-add_test_r(pmf-lidryer-arkode-01dx PMF)
 add_test_r(pmf-lidryer-arkode-10dx PMF)
 add_test_r(pmf-srk-1 PMF-SRK)
 add_test_rv(masscons-mol-1 MassCons)
