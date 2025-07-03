@@ -49,7 +49,7 @@ for ncell in ncells:
             )
 
 
-fname = "plots.pdf"
+fname = "masscons-plots.pdf"
 with PdfPages(fname) as pdf:
     for ncell in ncells:
         plt.figure(f"mass-{ncell}")
