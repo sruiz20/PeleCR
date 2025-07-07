@@ -568,6 +568,7 @@ PeleC::extend_signed_distance(
   const auto& flags = ebfactory.getMultiEBCellFlagFab();
   int nGrowFac = flags.nGrow() + 1;
   const auto& dx = parent->Geom(0).CellSizeArray();
+  const amrex::Real small = 1.e-13;
   const bool unequal_dx =
     amrex::max<amrex::Real>(AMREX_D_DECL(
       static_cast<amrex::Real>(0.0),
