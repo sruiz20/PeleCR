@@ -132,7 +132,7 @@ PeleC::initialize_eb2_structs()
 
       // Fill in boundary gradient for cut cells in this grown tile
       sv_eb_bndry_grad_stencil[iLocal].resize(ncutcells);
-      const amrex::Real dx = geom.CellSize()[0];
+      const auto& dx = geom.CellSizeArray();
       if (bgs == 0) {
         pc_fill_bndry_grad_stencil_quadratic(
           tbox, dx, ncutcells, sv_eb_bndry_geom[iLocal].data(), ncutcells,
@@ -562,12 +562,12 @@ PeleC::extend_signed_distance(
   // signed distance and propagates it manually up to the point where we need to
   // have it for derefining.
   BL_PROFILE("PeleC::extend_signed_distance()");
-  const auto geomdata = parent->Geom(0).data();
   amrex::Real maxSignedDist = signDist->max(0);
   const auto& ebfactory =
     dynamic_cast<amrex::EBFArrayBoxFactory const&>(signDist->Factory());
   const auto& flags = ebfactory.getMultiEBCellFlagFab();
   int nGrowFac = flags.nGrow() + 1;
+  const auto& dx = parent->Geom(0).CellSizeArray();
 
   // First set the region far away at the max value we need
   auto const& sd_ccs = signDist->arrays();
@@ -577,7 +577,6 @@ PeleC::extend_signed_distance(
     [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
       const auto& sd_cc = sd_ccs[nbx];
       if (sd_cc(i, j, k) >= maxSignedDist - 1e-12) {
-        const amrex::Real* dx = geomdata.CellSize();
         sd_cc(i, j, k) = nGrowFac * dx[0] * extendFactor;
       }
     });
@@ -602,7 +601,6 @@ PeleC::extend_signed_distance(
       ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const auto glo = amrex::lbound(gbx);
         const auto ghi = amrex::ubound(gbx);
-        const amrex::Real* dx = geomdata.CellSize();
         const amrex::Real extendedDist = dx[0] * extendFactor;
         if (sd_cc(i, j, k) >= maxSignedDist - 1e-12) {
           amrex::Real closestEBDist = 1e12;
