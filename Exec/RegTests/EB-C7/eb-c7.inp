@@ -7,7 +7,9 @@ geometry.is_periodic =  0   0  1
 geometry.coord_sys   =  0       # 0 => cart
 geometry.prob_lo     = 0.0 -0.30000000000000004 0.0
 geometry.prob_hi     = 2.0 1.5 0.1
-amr.n_cell           = 160 144 8
+#amr.n_cell           = 160 144 8
+amr.n_cell           = 320 144 8
+#amr.n_cell           = 80 144 8
 
 
 # >>>>>>>>>>>>>  BC KEYWORDS <<<<<<<<<<<<<<<<<<<<<<
@@ -63,8 +65,8 @@ amr.derive_plot_vars=ALL
 # PROBLEM DEFINITION
 prob.pl = 1.0
 prob.rhol = 1.0
-prob.pr = 0.1
-prob.rhor = 0.125
+prob.pr = 1.0
+prob.rhor = 1.0
 prob.angle = 30.0
 
 # TAGGING

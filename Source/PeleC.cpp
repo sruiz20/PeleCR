@@ -661,7 +661,7 @@ PeleC::initData()
       static_cast<amrex::Real>(std::abs(dx[0] - dx[1])),
       static_cast<amrex::Real>(std::abs(dx[0] - dx[2])))) > small * dx[0];
   if (eb_in_domain && unequal_dx) {
-    amrex::Abort("dx != dy != dz not supported with EB");
+    //amrex::Abort("dx != dy != dz not supported with EB");
   }
 #endif
 
