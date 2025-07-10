@@ -206,7 +206,6 @@ pc_compute_hyp_mol_flux_eb(
   const int nextra = 0;
   const int bc_test_val = 1;
 
-  const amrex::Real full_area = AMREX_D_PICK(1.0, dx[0], dx[0] * dx[1]);
   const amrex::Box bxg = amrex::grow(cbox, nextra - 1);
   const auto geomdata = geom.data();
   ProbParmDevice const* prob_parm = PeleC::d_prob_parm_device;
@@ -356,14 +355,18 @@ pc_compute_hyp_mol_flux_eb(
 
       // Copy result into ebflux vector. Being a bit chicken here and only
       // copy values where ebg % iv is within box
-      // const amrex::Real full_area_2D = std::sqrt(AMREX_D_TERM(
-      //   (ebnorm[0] * ebnorm[0]) * (dx[1] * dx[2]) ,
-      //   +(ebnorm[1] * ebnorm[1]) * (dx[0] * dx[2]),
-      //  +(ebnorm[2] * ebnorm[2]) * (dx[0] * dx[1]) ));
-      const amrex::Real full_area = std::sqrt(AMREX_D_TERM(
-        (ebnorm[0] * ebnorm[0]) * (dx[1] * dx[2]) * (dx[1] * dx[2]),
-        +(ebnorm[1] * ebnorm[1]) * (dx[0] * dx[2]) * (dx[0] * dx[2]),
-        +(ebnorm[2] * ebnorm[2]) * (dx[0] * dx[1]) * (dx[0] * dx[1])));
+#if AMREX_SPACEDIM == 1
+      const amrex::Real full_area = 1.0;
+#elif AMREX_SPACEDIM == 2
+      const amrex::Real full_area = std::sqrt(
+        (ebnorm[0] * ebnorm[0]) * dx[1] * dx[1]
+        +(ebnorm[1] * ebnorm[1]) * dx[0] * dx[0]);
+#elif AMREX_SPACEDIM == 3
+      const amrex::Real full_area = std::sqrt(
+        (ebnorm[0] * ebnorm[0]) * (dx[1] * dx[2]) * (dx[1] * dx[2])
+        +(ebnorm[1] * ebnorm[1]) * (dx[0] * dx[2]) * (dx[0] * dx[2])
+        +(ebnorm[2] * ebnorm[2]) * (dx[0] * dx[1]) * (dx[0] * dx[1]));
+#endif
       for (int n = 0; n < NVAR; n++) {
         ebflux[n * nebflux + L] += flux_tmp[n] * ebg[L].eb_area * full_area;
       }
