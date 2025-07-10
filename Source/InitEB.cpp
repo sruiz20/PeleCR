@@ -577,7 +577,7 @@ PeleC::extend_signed_distance(
   if (eb_in_domain && unequal_dx) {
     // Note to the future: replacing dx[0] by max(dx[0], dx[1], dx[2])
     // is probably good enough
-    //amrex::Abort("dx != dy != dz not supported with extend_signed_distance");
+    // amrex::Abort("dx != dy != dz not supported with extend_signed_distance");
   }
 
   // First set the region far away at the max value we need

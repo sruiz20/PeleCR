@@ -580,26 +580,6 @@ pc_eb_div(
               +f2(iv + amrex::IntVect::TheDimensionVector(2), n) - f2(iv, n)) +
             tmp) *
           volinv * kappa_inv;
-
-        if((n==1) && (std::abs(DC(iv, n)) > 1e-12)){
-
-          const auto val = (AMREX_D_TERM(
-              f0(iv + amrex::IntVect::TheDimensionVector(0), n) - f0(iv, n),
-              +f1(iv + amrex::IntVect::TheDimensionVector(1), n) - f1(iv, n),
-                                         +f2(iv + amrex::IntVect::TheDimensionVector(2), n) - f2(iv, n)));
-          // I would expect DC to be zero. Which component is not letting that happen?
-          // Seems to be a constant-ish factor of 1.8. Which is odd.
-          amrex::Print() << "DC in: " << iv << " : " << DC(iv, n)
-          << " , fxp = " << f0(iv + amrex::IntVect::TheDimensionVector(0), n)
-          << " , fx  = " << f0(iv , n)
-          << " , fyp = " << f1(iv + amrex::IntVect::TheDimensionVector(1), n)
-          << " , fy  = " << f1(iv , n)
-          << " , fzp = " << f2(iv + amrex::IntVect::TheDimensionVector(2), n)
-          << " , fz  = " << f2(iv , n)
-          << " , tmp = " << tmp
-          << " , val/tmp = " << val/tmp
-          << std::endl;
-        }
       }
     });
   }
