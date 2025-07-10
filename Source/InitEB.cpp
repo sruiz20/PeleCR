@@ -568,17 +568,7 @@ PeleC::extend_signed_distance(
   const auto& flags = ebfactory.getMultiEBCellFlagFab();
   int nGrowFac = flags.nGrow() + 1;
   const auto& dx = parent->Geom(0).CellSizeArray();
-  const amrex::Real small = 1.e-13;
-  const bool unequal_dx =
-    amrex::max<amrex::Real>(AMREX_D_DECL(
-      static_cast<amrex::Real>(0.0),
-      static_cast<amrex::Real>(std::abs(dx[0] - dx[1])),
-      static_cast<amrex::Real>(std::abs(dx[0] - dx[2])))) > small * dx[0];
-  if (eb_in_domain && unequal_dx) {
-    // Note to the future: replacing dx[0] by max(dx[0], dx[1], dx[2])
-    // is probably good enough
-    // amrex::Abort("dx != dy != dz not supported with extend_signed_distance");
-  }
+  const amrex::Real dx_max = *std::max_element(dx.begin(), dx.end());
 
   // First set the region far away at the max value we need
   auto const& sd_ccs = signDist->arrays();
@@ -588,7 +578,7 @@ PeleC::extend_signed_distance(
     [=] AMREX_GPU_DEVICE(int nbx, int i, int j, int k) noexcept {
       const auto& sd_cc = sd_ccs[nbx];
       if (sd_cc(i, j, k) >= maxSignedDist - 1e-12) {
-        sd_cc(i, j, k) = nGrowFac * dx[0] * extendFactor;
+        sd_cc(i, j, k) = nGrowFac * dx_max * extendFactor;
       }
     });
   amrex::Gpu::synchronize();
@@ -612,7 +602,7 @@ PeleC::extend_signed_distance(
       ParallelFor(bx, [=] AMREX_GPU_DEVICE(int i, int j, int k) noexcept {
         const auto glo = amrex::lbound(gbx);
         const auto ghi = amrex::ubound(gbx);
-        const amrex::Real extendedDist = dx[0] * extendFactor;
+        const amrex::Real extendedDist = dx_max * extendFactor;
         if (sd_cc(i, j, k) >= maxSignedDist - 1e-12) {
           amrex::Real closestEBDist = 1e12;
           for (int kk = glo.z; kk <= ghi.z; ++kk) {
