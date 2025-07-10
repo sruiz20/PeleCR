@@ -72,6 +72,16 @@ pc_fill_bndry_grad_stencil_quadratic(
   const int Nsten,
   EBBndrySten* grad_stencil)
 {
+  const amrex::Real small = 1.e-13;
+  const bool unequal_dx =
+    amrex::max<amrex::Real>(AMREX_D_DECL(
+      static_cast<amrex::Real>(0.0),
+      static_cast<amrex::Real>(std::abs(dx[0] - dx[1])),
+      static_cast<amrex::Real>(std::abs(dx[0] - dx[2])))) > small * dx[0];
+  if (unequal_dx) {
+    amrex::Abort(
+      "dx != dy != dz not supported with pc_fill_bndry_grad_stencil_quadratic");
+  }
   const amrex::Real area = std::pow(dx[0], AMREX_SPACEDIM - 1);
   const amrex::Real fac = area / dx[0];
 
