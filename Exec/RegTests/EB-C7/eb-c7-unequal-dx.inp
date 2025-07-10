@@ -7,7 +7,8 @@ geometry.is_periodic =  0   0  1
 geometry.coord_sys   =  0       # 0 => cart
 geometry.prob_lo     = 0.0 -0.30000000000000004 0.0
 geometry.prob_hi     = 2.0 1.5 0.1
-amr.n_cell           = 160 144 8
+amr.n_cell           = 320 144 8
+#amr.n_cell           = 160 144 8
 
 
 # >>>>>>>>>>>>>  BC KEYWORDS <<<<<<<<<<<<<<<<<<<<<<
@@ -90,4 +91,4 @@ extruded_triangles.tri_0_point_2 = 22.0 12.586235868333839 0.0
 extruded_triangles.tri_1_point_0 = -20.0 -11.431535329954588 0.0
 extruded_triangles.tri_1_point_1 = 22.0 12.817175976009688 0.0
 extruded_triangles.tri_1_point_2 = -20.0 20.0 0.0
-ebd.boundary_grad_stencil_type = 0
+ebd.boundary_grad_stencil_type = 1
