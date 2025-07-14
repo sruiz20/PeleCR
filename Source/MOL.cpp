@@ -215,11 +215,6 @@ pc_compute_hyp_mol_flux_eb(
     if (bxg.contains(iv)) {
       amrex::Real ebnorm[AMREX_SPACEDIM] = {AMREX_D_DECL(
         ebg[L].eb_normal[0], ebg[L].eb_normal[1], ebg[L].eb_normal[2])};
-      const amrex::Real ebnorm_mag = std::sqrt(AMREX_D_TERM(
-        ebnorm[0] * ebnorm[0], +ebnorm[1] * ebnorm[1], +ebnorm[2] * ebnorm[2]));
-      for (amrex::Real& dir : ebnorm) {
-        dir /= ebnorm_mag;
-      }
 
       amrex::Real ebnorm_local[AMREX_SPACEDIM] = {
         AMREX_D_DECL(ebnorm[0] / dx[0], ebnorm[1] / dx[1], ebnorm[2] / dx[2])};
