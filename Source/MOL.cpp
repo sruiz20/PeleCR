@@ -206,7 +206,6 @@ pc_compute_hyp_mol_flux_eb(
   const int nextra = 0;
   const int bc_test_val = 1;
 
-  const amrex::Real full_area = AMREX_D_PICK(1.0, dx[0], dx[0] * dx[1]);
   const amrex::Box bxg = amrex::grow(cbox, nextra - 1);
   const auto geomdata = geom.data();
   ProbParmDevice const* prob_parm = PeleC::d_prob_parm_device;
@@ -216,26 +215,30 @@ pc_compute_hyp_mol_flux_eb(
     if (bxg.contains(iv)) {
       amrex::Real ebnorm[AMREX_SPACEDIM] = {AMREX_D_DECL(
         ebg[L].eb_normal[0], ebg[L].eb_normal[1], ebg[L].eb_normal[2])};
-      const amrex::Real ebnorm_mag = std::sqrt(AMREX_D_TERM(
-        ebnorm[0] * ebnorm[0], +ebnorm[1] * ebnorm[1], +ebnorm[2] * ebnorm[2]));
-      for (amrex::Real& dir : ebnorm) {
-        dir /= ebnorm_mag;
+
+      amrex::Real ebnorm_local[AMREX_SPACEDIM] = {
+        AMREX_D_DECL(ebnorm[0] / dx[0], ebnorm[1] / dx[1], ebnorm[2] / dx[2])};
+      const amrex::Real ebnorm_mag_local = std::sqrt(AMREX_D_TERM(
+        ebnorm_local[0] * ebnorm_local[0], +ebnorm_local[1] * ebnorm_local[1],
+        +ebnorm_local[2] * ebnorm_local[2]));
+      for (amrex::Real& dir : ebnorm_local) {
+        dir /= ebnorm_mag_local;
       }
 
       amrex::Real flux_tmp[NVAR] = {0.0};
 
       if (!eb_problem_state) {
         AMREX_D_TERM(
-          flux_tmp[UMX] = -q(iv, QPRES) * ebnorm[0];
-          , flux_tmp[UMY] = -q(iv, QPRES) * ebnorm[1];
-          , flux_tmp[UMZ] = -q(iv, QPRES) * ebnorm[2];)
+          flux_tmp[UMX] = -q(iv, QPRES) * ebnorm_local[0];
+          , flux_tmp[UMY] = -q(iv, QPRES) * ebnorm_local[1];
+          , flux_tmp[UMZ] = -q(iv, QPRES) * ebnorm_local[2];)
       } else {
         auto eos = pele::physics::PhysicsType::eos();
         amrex::Real qtempl[R_NUM] = {0.0};
         amrex::Real* spl = &qtempl[R_Y];
         qtempl[R_UN] = -(AMREX_D_TERM(
-          q(iv, QU) * ebnorm[0], +q(iv, QV) * ebnorm[1],
-          +q(iv, QW) * ebnorm[2]));
+          q(iv, QU) * ebnorm_local[0], +q(iv, QV) * ebnorm_local[1],
+          +q(iv, QW) * ebnorm_local[2]));
         qtempl[R_UT1] = 0.0;
         qtempl[R_UT2] = 0.0;
         qtempl[R_P] = q(iv, QPRES);
@@ -276,8 +279,8 @@ pc_compute_hyp_mol_flux_eb(
 
         const bool do_ebfill = ProblemSpecificFunctions::problem_eb_state(
           geomdata, vfrac(iv), iv,
-          AMREX_D_DECL(ebnorm[0], ebnorm[1], ebnorm[2]), qtempl, spl, rhoe_l,
-          gamc_l, qtempr, spr, rhoe_r, gamc_r, prob_parm);
+          AMREX_D_DECL(ebnorm_local[0], ebnorm_local[1], ebnorm_local[2]),
+          qtempl, spl, rhoe_l, gamc_l, qtempr, spr, rhoe_r, gamc_r, prob_parm);
 
         if (do_ebfill) {
 
@@ -333,20 +336,32 @@ pc_compute_hyp_mol_flux_eb(
 
           const amrex::Real tmp_flx_umx = flux_tmp[UMX];
           AMREX_D_TERM(
-            flux_tmp[UMX] = -tmp_flx_umx * ebnorm[0];
-            , flux_tmp[UMY] = -tmp_flx_umx * ebnorm[1];
-            , flux_tmp[UMZ] = -tmp_flx_umx * ebnorm[2];)
+            flux_tmp[UMX] = -tmp_flx_umx * ebnorm_local[0];
+            , flux_tmp[UMY] = -tmp_flx_umx * ebnorm_local[1];
+            , flux_tmp[UMZ] = -tmp_flx_umx * ebnorm_local[2];)
 
         } else {
           AMREX_D_TERM(
-            flux_tmp[UMX] = -q(iv, QPRES) * ebnorm[0];
-            , flux_tmp[UMY] = -q(iv, QPRES) * ebnorm[1];
-            , flux_tmp[UMZ] = -q(iv, QPRES) * ebnorm[2];)
+            flux_tmp[UMX] = -q(iv, QPRES) * ebnorm_local[0];
+            , flux_tmp[UMY] = -q(iv, QPRES) * ebnorm_local[1];
+            , flux_tmp[UMZ] = -q(iv, QPRES) * ebnorm_local[2];)
         }
       }
 
       // Copy result into ebflux vector. Being a bit chicken here and only
       // copy values where ebg % iv is within box
+#if AMREX_SPACEDIM == 1
+      const amrex::Real full_area = 1.0;
+#elif AMREX_SPACEDIM == 2
+      const amrex::Real full_area = std::sqrt(
+        (ebnorm[0] * ebnorm[0]) * dx[1] * dx[1]
+        +(ebnorm[1] * ebnorm[1]) * dx[0] * dx[0]);
+#elif AMREX_SPACEDIM == 3
+      const amrex::Real full_area = std::sqrt(
+        (ebnorm[0] * ebnorm[0]) * (dx[1] * dx[2]) * (dx[1] * dx[2])
+        +(ebnorm[1] * ebnorm[1]) * (dx[0] * dx[2]) * (dx[0] * dx[2])
+        +(ebnorm[2] * ebnorm[2]) * (dx[0] * dx[1]) * (dx[0] * dx[1]));
+#endif
       for (int n = 0; n < NVAR; n++) {
         ebflux[n * nebflux + L] += flux_tmp[n] * ebg[L].eb_area * full_area;
       }

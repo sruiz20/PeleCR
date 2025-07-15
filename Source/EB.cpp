@@ -66,14 +66,24 @@ pc_fill_sv_ebg(
 void
 pc_fill_bndry_grad_stencil_quadratic(
   const amrex::Box& bx,
-  const amrex::Real dx,
+  const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx,
   const int /*Nebg*/,
   const EBBndryGeom* ebg,
   const int Nsten,
   EBBndrySten* grad_stencil)
 {
-  const amrex::Real area = std::pow(dx, AMREX_SPACEDIM - 1);
-  const amrex::Real fac = area / dx;
+  const amrex::Real small = 1.e-13;
+  const bool unequal_dx =
+    amrex::max<amrex::Real>(AMREX_D_DECL(
+      static_cast<amrex::Real>(0.0),
+      static_cast<amrex::Real>(std::abs(dx[0] - dx[1])),
+      static_cast<amrex::Real>(std::abs(dx[0] - dx[2])))) > small * dx[0];
+  if (unequal_dx) {
+    amrex::Abort(
+      "dx != dy != dz not supported with pc_fill_bndry_grad_stencil_quadratic");
+  }
+  const amrex::Real area = std::pow(dx[0], AMREX_SPACEDIM - 1);
+  const amrex::Real fac = area / dx[0];
 
   amrex::ParallelFor(Nsten, [=] AMREX_GPU_DEVICE(int L) {
     if (bx.contains(ebg[L].iv)) {
@@ -253,7 +263,7 @@ pc_fill_bndry_grad_stencil_quadratic(
 void
 pc_fill_bndry_grad_stencil_ls(
   const amrex::Box& bx,
-  const amrex::Real dx,
+  const amrex::GpuArray<amrex::Real, AMREX_SPACEDIM>& dx,
   const int /*Nebg*/,
   const EBBndryGeom* ebg,
   const int Nsten,
@@ -263,8 +273,8 @@ pc_fill_bndry_grad_stencil_ls(
 
   AMREX_ASSERT(AMREX_SPACEDIM > 1);
 
-  const amrex::Real area = std::pow(dx, AMREX_SPACEDIM - 1);
-  const amrex::Real fac = area / dx;
+  const amrex::Real area = std::pow(dx[0], AMREX_SPACEDIM - 1);
+  const amrex::Real fac = area / dx[0];
 
   amrex::ParallelFor(Nsten, [=] AMREX_GPU_DEVICE(int L) {
     if (bx.contains(ebg[L].iv)) {
