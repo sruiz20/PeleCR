@@ -273,12 +273,9 @@ pc_fill_bndry_grad_stencil_ls(
 
   AMREX_ASSERT(AMREX_SPACEDIM > 1);
 
-  const amrex::Real area = std::pow(dx[0], AMREX_SPACEDIM - 1);
-  const amrex::Real fac = area / dx[0];
-
   amrex::ParallelFor(Nsten, [=] AMREX_GPU_DEVICE(int L) {
     if (bx.contains(ebg[L].iv)) {
-      const amrex::Real n[AMREX_SPACEDIM] = {AMREX_D_DECL(
+      const amrex::Real ebnorm[AMREX_SPACEDIM] = {AMREX_D_DECL(
         ebg[L].eb_normal[0], ebg[L].eb_normal[1], ebg[L].eb_normal[2])};
 
       const amrex::Real centcoord[AMREX_SPACEDIM] = {AMREX_D_DECL(
@@ -289,9 +286,9 @@ pc_fill_bndry_grad_stencil_ls(
 
       // From ivs, move to center of stencil, then move to lower-left of that
       const int baseiv[AMREX_SPACEDIM] = {AMREX_D_DECL(
-        ivs[0] + (int)std::copysign(1.0, n[0]) - 1,
-        ivs[1] + (int)std::copysign(1.0, n[1]) - 1,
-        ivs[2] + (int)std::copysign(1.0, n[2]) - 1)};
+        ivs[0] + (int)std::copysign(1.0, ebnorm[0]) - 1,
+        ivs[1] + (int)std::copysign(1.0, ebnorm[1]) - 1,
+        ivs[2] + (int)std::copysign(1.0, ebnorm[2]) - 1)};
 
       // set iv and iv_base
       for (int dir = 0; dir < AMREX_SPACEDIM; dir++) {
@@ -364,11 +361,28 @@ pc_fill_bndry_grad_stencil_ls(
                     sten_iv[0] != ivs[0], || sten_iv[1] != ivs[1],
                     || sten_iv[2] != ivs[2])) &&
                   !flags(sten_iv).isCovered()) {
+                  const amrex::Real full_area = std::sqrt(
+                    (ebnorm[0] * ebnorm[0]) * (dx[1] * dx[2]) *
+                      (dx[1] * dx[2]) +
+                    (ebnorm[1] * ebnorm[1]) * (dx[0] * dx[2]) *
+                      (dx[0] * dx[2]) +
+                    (ebnorm[2] * ebnorm[2]) * (dx[0] * dx[1]) *
+                      (dx[0] * dx[1]));
+                  amrex::Real ebnorm_local[AMREX_SPACEDIM] = {AMREX_D_DECL(
+                    ebnorm[0] / dx[0], ebnorm[1] / dx[1], ebnorm[2] / dx[2])};
+                  const amrex::Real ebnorm_mag_local = std::sqrt(AMREX_D_TERM(
+                    ebnorm_local[0] * ebnorm_local[0],
+                    +ebnorm_local[1] * ebnorm_local[1],
+                    +ebnorm_local[2] * ebnorm_local[2]));
+                  for (amrex::Real& dir : ebnorm_local) {
+                    dir /= ebnorm_mag_local;
+                  }
                   grad_stencil[L].val AMREX_D_TERM([ii], [jj], [kk]) =
-                    fac * ebg[L].eb_area *
+                    full_area / dx[0]* ebg[L].eb_area *
                     (AMREX_D_TERM(
-                      wvec[iter][0] * n[0], +wvec[iter][1] * n[1],
-                      +wvec[iter][2] * n[2]));
+                      wvec[iter][0] * ebnorm_local[0],
+                      +wvec[iter][1] * ebnorm_local[1],
+                      +wvec[iter][2] * ebnorm_local[2]));
                   selfweight +=
                     grad_stencil[L].val AMREX_D_TERM([ii], [jj], [kk]);
                   iter++;
